@@ -18,7 +18,7 @@ export interface ApiResponse<T = any> {
  */
 const requestHandler = async <T>(
   request: Promise<AxiosResponse<T>>,
-  router: AppRouterInstance
+  router?: AppRouterInstance
 ): Promise<ApiResponse<T>> => {
   try {
     const response = await request;
@@ -38,7 +38,11 @@ const requestHandler = async <T>(
         localStorage.removeItem("user");
         localStorage.removeItem("role");
       }
-      router.push("/login");
+
+      if(router && typeof window !== "undefined"){
+        router.push("/login");
+
+      }
     }
 
     return {
@@ -53,7 +57,7 @@ const requestHandler = async <T>(
 /**
  * Fungsi pembantu (Helper) yang akan dipanggil di komponen
  */
-export const getData = <T>(url: string, router: AppRouterInstance, params: object = {}) => {
+export const getData = <T>(url: string, router?: AppRouterInstance, params: object = {}) => {
   return requestHandler<T>(api.get(url, { params }), router);
 };
 
