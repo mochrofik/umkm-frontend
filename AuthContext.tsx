@@ -1,0 +1,109 @@
+"use client";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  role: string | null;
+  token: string | null;
+  loading: boolean;
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
+  setRole: React.Dispatch<React.SetStateAction<string | null>>;
+  login: (userData: User, userRole: string, userToken: string) => void;
+  logout: () => void;
+}
+
+// Buat context dengan default value undefined
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const savedRole = localStorage.getItem("role");
+    const savedUser = localStorage.getItem("user");
+    const savedToken = localStorage.getItem("token");
+
+    console.log("token",savedToken);
+    
+
+    if (savedRole && savedToken && savedUser) {
+      const authPages = ["/login", "/register"];
+      
+      setRole(savedRole);
+      setToken(savedToken);
+      
+      try {
+        const userObj: User = JSON.parse(savedUser);
+        setUser(userObj);
+      } catch (e) {
+        console.error("Failed to parse user", e);
+      }
+
+      if (authPages.includes(pathname)) {
+        router.push("/dashboard");
+      }
+    } else {
+      const protectedPrefix = ["/dashboard"];
+      const isProtected = protectedPrefix.some((path) => pathname.startsWith(path));
+
+      if (isProtected) {
+        logout();
+        toast.error("Login terlebih dahulu");
+      }
+    }
+    setLoading(false);
+  }, [pathname]); // Tambahkan pathname sebagai dependency agar re-check saat pindah halaman
+
+  const login = (userData: User, userRole: string, userToken: string) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("role", userRole);
+    localStorage.setItem("token", userToken);
+
+    setUser(userData);
+    setRole(userRole);
+    setToken(userToken);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+
+    setUser(null);
+    setRole(null);
+    setToken(null);
+
+    router.push("/login");
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{ user, role, token, setToken, setRole, loading, login, logout }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+// Custom hook dengan proteksi TypeScript
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
