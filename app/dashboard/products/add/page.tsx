@@ -67,37 +67,42 @@ export default function AddProductPage() {
         
         // Fetch Categories
         const res = await getData(`${url}api/category/get-categories`, router);
-        const data =  res.data as any;
-        setCategories(data.data);
+
+        if(res.success){
+          const data = await res.data as any;
+          setCategories(data.data.data || []);
+        }
 
         // Fetch Detail if Edit Mode
         if (isEditMode && productId) {
           const resEdit = await getData(
             `${url}api/product/detail-product/${productId}`
           );
-          const dataEdit =  resEdit.data as any;
-          const p = dataEdit.data;
-
-          const cleanPrice = parseInt(p.price);
-
-          setFormData({
-            name: p.name,
-            price: cleanPrice,
-            description: p.description || "",
-            stock: p.stock || "",
-            is_available: p.is_available === 1,
-            menu_category_id: p.menu_category_id,
-            tags: Array.isArray(p.tags)
-              ? p.tags.map((t: string | TagDetail) => (typeof t === "object" ? t.tag_name : t))
-              : [],
-          });
-
-          if (p.image_url) {
-            setPreviewImg(
-              p.logo_url != null
-                ? p.logo_url
-                : `${process.env.NEXT_PUBLIC_SITE_URL}storage/uploads/product/${p.image_url}`
-            );
+          if(resEdit.success){
+            const dataEdit =  resEdit.data as any;
+            const p = dataEdit.data;
+  
+            const cleanPrice = parseInt(p.price);
+  
+            setFormData({
+              name: p.name,
+              price: cleanPrice,
+              description: p.description || "",
+              stock: p.stock || "",
+              is_available: p.is_available === 1,
+              menu_category_id: p.menu_category_id,
+              tags: Array.isArray(p.tags)
+                ? p.tags.map((t: string | TagDetail) => (typeof t === "object" ? t.tag_name : t))
+                : [],
+            });
+  
+            if (p.image_url) {
+              setPreviewImg(
+                p.logo_url != null
+                  ? p.logo_url
+                  : `${process.env.NEXT_PUBLIC_SITE_URL}storage/uploads/product/${p.image_url}`
+              );
+            }
           }
         }
       } catch (error) {

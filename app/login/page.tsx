@@ -77,7 +77,7 @@ export default function LoginPage() {
     </button>
 
     <div className="mb-10 text-center">
-      <h1 className="text-3xl font-extrabold text-blue-600 tracking-tight">Jhejen Kadok!</h1>
+      <h1 className="text-3xl font-extrabold text-blue-600 tracking-tight">Le melleh!</h1>
       <p className="text-slate-500 mt-2 text-sm">Dukung UMKM daerahmu dengan rasa yang juara!</p>
     </div>
                  <form onSubmit={handleLogin} className="space-y-5">
@@ -117,6 +117,17 @@ export default function LoginPage() {
         {loading ? 'Memproses...' : 'Masuk Sekarang'}
       </button>
     </form>
+
+    <div className="mt-8 text-center text-sm text-slate-500">
+      Belum punya akun? 
+      <a href="/register" className="ml-1 text-blue-600 font-bold hover:underline underline-offset-4">
+        registrasi
+      </a>
+      <div className="px-2"> atau </div>
+      <a href="/register-umkm" className="ml-1 text-blue-600 font-bold hover:underline underline-offset-4">
+        ingin berjualan?
+      </a>
+    </div>
             </div>
         </div>
     );

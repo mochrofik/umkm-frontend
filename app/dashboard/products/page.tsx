@@ -63,13 +63,15 @@ export default function ProductPage() {
         `${url}api/product/get-product?page=${page}&search=${search}&limit=${perPage}`,
         router
       );
-      
-      const dataProd: ProductResponse =  resProd.data as ProductResponse;
-      
-      setProducts(dataProd.data.data);
-      setLastPage(dataProd.data.last_page);
-      setCurrentpage(dataProd.data.current_page || 1);
-      setPerPage(dataProd.data.per_page || 10);
+      if(resProd.success){
+        const dataProd: ProductResponse =  resProd.data as ProductResponse;
+        
+        setProducts(dataProd.data.data);
+        setLastPage(dataProd.data.last_page);
+        setCurrentpage(dataProd.data.current_page || 1);
+        setPerPage(dataProd.data.per_page || 10);
+
+      }
     } catch (error) {
       console.error(error);
       toast.error("Gagal mengambil data");
@@ -104,7 +106,6 @@ export default function ProductPage() {
             },
           });
 
-          const token = localStorage.getItem("token");
           const url = process.env.NEXT_PUBLIC_SITE_URL;
           await deleteData(`${url}api/product/destroy/${id}`,router);
           

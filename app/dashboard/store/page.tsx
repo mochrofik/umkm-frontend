@@ -467,109 +467,278 @@ export default function StorePage() {
             </div>
 
             <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[70vh]">
-              <div className="p-6 space-y-4 font-poppins">
-                <h4 className="text-xs font-semibold text-slate-400 uppercase">Informasi Akun</h4>
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    placeholder="Nama Pemilik"
-                    required
-                    className="w-full px-4 py-2 border rounded-lg outline-none"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    required
-                    className="w-full px-4 py-2 border rounded-lg outline-none"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                  <input
-                    type="password"
-                    placeholder={editingStore ? "Ganti Password (Opsional)" : "Password"}
-                    required={!editingStore}
-                    className="w-full px-4 py-2 border rounded-lg outline-none"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  />
-                  <select
-                    className="w-full px-4 py-2 border rounded-lg outline-none"
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  >
-                    <option value="active">Aktif</option>
-                    <option value="verify">Verifikasi</option>
-                    <option value="banned">Banned</option>
-                  </select>
+               <div className="p-6 space-y-4">
+                {/* --- DATA USER (Account) --- */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    Informasi Akun
+                  </h4>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Nama Pemilik
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Password{" "}
+                      {editingStore && (
+                        <span className="text-xs text-slate-400 font-normal">
+                          (Kosongkan jika tidak ganti)
+                        </span>
+                      )}
+                    </label>
+                    <input
+                      type="password"
+                      required={!editingStore}
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none"
+                      value={formData.password}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="grid grid-cols gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Status
+                      </label>
+                      <select
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none"
+                        value={formData.status}
+                        onChange={(e) =>
+                          setFormData({ ...formData, status: e.target.value })
+                        }
+                      >
+                        <option value="active">Active</option>
+                        <option value="verify">Verify</option>
+                        <option value="banned">Banned</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
-                <hr className="my-4" />
+                <hr className="border-slate-100" />
 
-                <h4 className="text-xs font-semibold text-slate-400 uppercase">Profil Toko</h4>
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    placeholder="Nama Toko"
-                    required
-                    className="w-full px-4 py-2 border rounded-lg outline-none"
-                    value={formData.store_name}
-                    onChange={handleStoreNameChange}
-                  />
-                  <input
-                    type="text"
-                    readOnly
-                    placeholder="Slug Otomatis"
-                    className="w-full px-4 py-2 border rounded-lg bg-slate-50 text-slate-400 outline-none"
-                    value={formData.slug}
-                  />
-                  
-                  {/* Icon Upload & Preview */}
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 border-2 border-dashed border-slate-200 rounded-lg flex items-center justify-center overflow-hidden bg-slate-50">
-                      {previewImg ? <Image src={previewImg} alt="Preview" width={64} height={64} className="object-cover h-full w-full" /> : <span className="text-[10px] text-slate-400">No Logo</span>}
-                    </div>
-                    <input type="file" accept="image/*" onChange={handleFileChange} className="text-xs" />
-                  </div>
+                {/* --- DATA TOKO (Store Profile) --- */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    Profil Toko
+                  </h4>
 
-                  <input
-                    type="text"
-                    placeholder="No. Telepon"
-                    className="w-full px-4 py-2 border rounded-lg outline-none"
-                    value={formData.phone_number}
-                    onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
-                  />
-                  <textarea
-                    placeholder="Alamat Lengkap"
-                    rows={2}
-                    className="w-full px-4 py-2 border rounded-lg outline-none"
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  />
-                  <textarea
-                    placeholder="Deskripsi Singkat"
-                    rows={2}
-                    className="w-full px-4 py-2 border rounded-lg outline-none"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  />
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="time" value={formData.open_at} onChange={(e) => setFormData({...formData, open_at: e.target.value})} className="border p-2 rounded-lg" />
-                    <input type="time" value={formData.close_at} onChange={(e) => setFormData({...formData, close_at: e.target.value})} className="border p-2 rounded-lg" />
-                  </div>
-
-                  {/* Map Pinning */}
-                  <div className="space-y-2">
-                    <button type="button" onClick={handleGetCurrentLocation} className="text-xs text-blue-600 font-bold flex items-center gap-1 hover:underline">
-                      <Navigation size={12} /> Gunakan Lokasi Saat Ini
-                    </button>
-                    <MapPicker 
-                      lat={Number(formData.latitude)} 
-                      lng={Number(formData.longitude)} 
-                      onChange={(lat, lng) => setFormData({...formData, latitude: lat, longitude: lng})} 
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Nama Toko
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none"
+                      value={formData.store_name}
+                      onChange={handleStoreNameChange}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Slug URL (Otomatis)
+                    </label>
+                    <input
+                      readOnly
+                      type="text"
+                      className="mt-1 w-full p-3 border rounded-xl bg-gray-100 text-gray-500 outline-none"
+                      value={formData.slug}
+                      placeholder="nasi-goreng-pak-eko"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Icon Toko
+                    </label>
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 border-2 border-dashed border-slate-200 rounded-lg flex items-center justify-center overflow-hidden bg-slate-50">
+                        {previewImg ? (
+                          <img
+                            src={previewImg}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-slate-400 text-[10px] text-center p-1">
+                            No Icon
+                          </span>
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="block w-full text-xs text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      No. Telepon (Opsional)
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none"
+                      value={formData.phone_number}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          phone_number: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Alamat
+                    </label>
+                    <textarea
+                      required
+                      rows={2}
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none"
+                      value={formData.address}
+                      onChange={(e) =>
+                        setFormData({ ...formData, address: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Deskripsi
+                    </label>
+                    <textarea
+                      required
+                      rows={2}
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none"
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Jam Buka
+                      </label>
+                      <input
+                        type="time"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none"
+                        value={formData.open_at}
+                        onChange={(e) =>
+                          setFormData({ ...formData, open_at: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Jam Tutup
+                      </label>
+                      <input
+                        type="time"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none"
+                        value={formData.close_at}
+                        onChange={(e) =>
+                          setFormData({ ...formData, close_at: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Lokasi Toko (Pin Map)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleGetCurrentLocation}
+                      className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold"
+                    >
+                      <Navigation size={14} />
+                      Gunakan Lokasi Saat Ini
+                    </button>
+                    <MapPicker
+                      lat={Number(formData.latitude)}
+                      lng={Number(formData.longitude) }
+                      onChange={(lat, lng) => {
+                        setFormData({
+                          ...formData,
+                          latitude: lat,
+                          longitude: lng,
+                        });
+                      }}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Latitude
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none"
+                        value={formData.latitude}
+                        onChange={(e) =>
+                          setFormData({ ...formData, latitude: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Longitude
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none"
+                        value={formData.longitude}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            longitude: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

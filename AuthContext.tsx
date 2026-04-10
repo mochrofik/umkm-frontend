@@ -37,8 +37,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const savedUser = localStorage.getItem("user");
     const savedToken = localStorage.getItem("token");
 
-    console.log("token",savedToken);
-    
 
     if (savedRole && savedToken && savedUser) {
       const authPages = ["/login", "/register"];

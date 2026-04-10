@@ -65,7 +65,7 @@ export default function StoreForm({ data, setFormData, onChange, onSubmit }: Sto
         null 
       );
 
-      if (response && response.status === 200) {
+      if (response && response.success) {
         const rawData: RawCategory[] = response.data.data.data;
 
         const formattedData: CategoryOption[] = rawData.map((item) => ({

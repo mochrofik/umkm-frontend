@@ -72,12 +72,14 @@ export default function CategoryPage() {
         router
       );
 
-      const data: CategoryResponse =  response.data as CategoryResponse;
+      if(response.success){
+        const data: CategoryResponse =  response.data as CategoryResponse;
+        setCategories(data.data.data);
+        setCurrentpage(data.data.current_page || 1);
+        setLastpage(data.data.last_page || 1);
+        setPerPage(data.data.per_page || 10);
+      }
 
-      setCategories(data.data.data);
-      setCurrentpage(data.data.current_page || 1);
-      setLastpage(data.data.last_page || 1);
-      setPerPage(data.data.per_page || 10);
     } catch (error) {
       toast.error("Terjadi kesalahan saat mengambil data kategori");
     } finally {
