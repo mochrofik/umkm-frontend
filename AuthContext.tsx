@@ -49,9 +49,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (e) {
         console.error("Failed to parse user", e);
       }
-      if(pathname === "/dashboard" && savedRole == "customer"){
-        router.push("/");
-      }
       if (authPages.includes(pathname)) {
         router.push("/dashboard");
       }

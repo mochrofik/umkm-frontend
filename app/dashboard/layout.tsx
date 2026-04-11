@@ -21,7 +21,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   
   const menuRef = useRef<HTMLDivElement>(null);
   
-  const { user, loading, logout } = useAuth();
+  const { user, role, loading, logout } = useAuth();
 
   
     const getProfile = async () => {
@@ -68,7 +68,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       console.error("Logout gagal:", error);
     }
   };
-
+  if(role == "customer"){
+   return (
+    <div>
+      <div className="p-10 text-center font-bold">
+        <h1 className="text-2xl">Akses Ditolak</h1>
+        <p className="text-gray-600 mt-2">Anda tidak memiliki akses ke dashboard.</p>
+        <Link href="/" className="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded">
+          Kembali ke Beranda
+        </Link>
+      </div>
+    </div>
+   );
+  
+  }
   if (loading) {
     return (
       <div className="p-10 text-center font-bold">
