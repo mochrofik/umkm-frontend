@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { getData } from "@/helper/apiHelper";
 import getCroppedImg from "@/helper/cropImage/cropImage";
 import ImageCropper from "@/helper/cropImage/imageCropper";
+import Loading from "../Loading";
 
 // --- Interfaces ---
 
@@ -32,6 +33,7 @@ interface StoreData {
 }
 
 interface StoreFormProps {
+  isLoadingButton: boolean;
   data: StoreData;
   setFormData: React.Dispatch<React.SetStateAction<any>>;
   onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
@@ -43,7 +45,7 @@ interface RawCategory {
   name: string;
 }
 
-export default function StoreForm({ data, setFormData, onChange, onSubmit }: StoreFormProps) {
+export default function StoreForm({ isLoadingButton, data, setFormData, onChange, onSubmit}: StoreFormProps) {
   const [selectedImg, setSelectedImage] = useState<File | null>(null);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
@@ -407,12 +409,23 @@ export default function StoreForm({ data, setFormData, onChange, onSubmit }: Sto
       </section>
 
       <div className="flex justify-end pt-4">
-        <button
+
+        {isLoadingButton ? (
+
+          <Loading
+          fullPage={false}
+          />
+        ) : (
+
+          <button
           type="submit"
+          disabled={isLoadingButton}
           className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-md"
         >
           Simpan Perubahan
         </button>
+        )}
+        
       </div>
 
       {showCropper && imageToCrop && (

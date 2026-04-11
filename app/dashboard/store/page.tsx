@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Navigation,
+  Phone,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -22,62 +23,12 @@ import { deleteData, getData } from "@/helper/apiHelper";
 import getCroppedImg from "@/helper/cropImage/cropImage";
 import Loading from "@/components/Loading";
 import ImageCropper from "@/helper/cropImage/imageCropper";
+import Pagination from "@/components/Pagination";
+import { Store, StoreFormData, StoreResponse } from "@/types/stores";
+import { DEFAULT_STATUS, STATUS_MAP } from "@/types/status";
 
 // --- Interfaces ---
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  status: string;
-}
-
-interface Store {
-  id: number;
-  user_id: number;
-  name: string;
-  slug: string;
-  address: string;
-  description: string | null;
-  phone_number: string | null;
-  latitude: number | string | null;
-  longitude: number | string | null;
-  open_at: string | null;
-  close_at: string | null;
-  logo: string | null;
-  logo_url: string;
-  rating: number;
-  is_open: string;
-  user: User;
-}
-
-interface StoreFormData {
-  name: string;
-  id: number | null;
-  store_name: string;
-  email: string;
-  password: string;
-  role: string;
-  status: string;
-  address: string;
-  description: string;
-  phone_number: string;
-  latitude: number | string;
-  longitude: number | string;
-  open_at: string;
-  close_at: string;
-  slug: string;
-}
-
-interface StoreResponse {
-  success: boolean;
-  data: {
-    data: Store[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-  };
-}
 
 export default function StorePage() {
   const router = useRouter();
@@ -337,18 +288,25 @@ export default function StorePage() {
       </div>
 
       {/* Search Section */}
-      <form onSubmit={handleSearch} className="mb-6">
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input
-            type="text"
-            placeholder="Cari toko & tekan Enter..."
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+
+      <div className="flex flex-row gap-4">
+        <div className="w-full">
+          <form onSubmit={handleSearch} className="mb-6">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input
+                type="text"
+                placeholder="Cari toko & tekan Enter..."
+                className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </form>
+
         </div>
-      </form>
+        
+      </div>
 
       {/* Table Section */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -378,7 +336,10 @@ export default function StorePage() {
                     ? `https://www.google.com/maps?q=${store.latitude},${store.longitude}`
                     : `https://www.google.com/maps/search/${encodeURIComponent(store.name + " " + store.address)}`;
 
-                  return (
+                  
+                    const currentStatus = STATUS_MAP[store.user.status] || DEFAULT_STATUS;
+                  
+                    return (
                     <tr key={store.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 text-slate-600 text-sm">{rowNumber}</td>
                       <td className="px-6 py-4">
@@ -393,12 +354,26 @@ export default function StorePage() {
                           />
                           <div>
                             <div className="font-bold text-slate-800 text-sm">{store.name}</div>
+                            <div className="text-xs text-slate-500">{store.user.email}</div>
                             <div className="text-[11px] text-slate-500">⭐ {store.rating}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <div className="font-medium text-slate-700">{store.phone_number || "-"}</div>
+                        <div className="font-medium text-green-700">
+                          
+                           {store.phone_number ? (
+                          <a
+                            href={`https://wa.me/${store.phone_number}`}
+                            target="_blank"
+                            className="flex items-center gap-1 hover:text-green-600"
+                          >
+                            <Phone size={14} /> {store.phone_number}
+                          </a>
+                        ) : (
+                          "-"
+                        )}
+                          </div>
                         <div className="text-slate-400 text-xs truncate max-w-[150px]">{store.address}</div>
                       </td>
                       <td className="px-6 py-4 text-center">
@@ -407,16 +382,15 @@ export default function StorePage() {
                         </a>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                          store.user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {store.user.status}
-                        </span>
+                        <span
+          className={`inline-flex px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${currentStatus.color}`}
+        >
+          {currentStatus.label} </span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-1">
-                          <button onClick={() => openModal(store)} className="p-2 text-blue-400 hover:text-blue-600 rounded-lg"><Pencil size={18} /></button>
-                          <button onClick={() => handleDelete(store.id)} className="p-2 text-red-400 hover:text-red-600 rounded-lg"><Trash2 size={18} /></button>
+                          <button onClick={() => openModal(store)} className="p-2 cursor-pointer text-blue-400 hover:text-blue-600 rounded-lg"><Pencil size={18} /></button>
+                          <button onClick={() => handleDelete(store.id)} className="p-2   cursor-pointer text-red-400 hover:text-red-600 rounded-lg"><Trash2 size={18} /></button>
                         </div>
                       </td>
                     </tr>
@@ -429,29 +403,13 @@ export default function StorePage() {
               )}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-t">
-        <p className="text-sm text-slate-600 font-poppins">
-          Halaman <span className="font-bold">{currentPage}</span> dari <span className="font-bold">{lastPage}</span>
-        </p>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1 || loading}
-            className="p-2 border rounded-lg hover:bg-white disabled:opacity-50"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, lastPage))}
-            disabled={currentPage === lastPage || loading}
-            className="p-2 border rounded-lg hover:bg-white disabled:opacity-50"
-          >
-            <ChevronRight size={20} />
-          </button>
+          <Pagination
+          currentPage={currentPage}
+          lastPage={lastPage}
+          loading={loading}
+          setCurrentPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          setCurrentNext={() => setCurrentPage((prev) => Math.min(prev + 1, lastPage))}
+          />
         </div>
       </div>
 
@@ -468,12 +426,10 @@ export default function StorePage() {
 
             <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[70vh]">
                <div className="p-6 space-y-4">
-                {/* --- DATA USER (Account) --- */}
                 <div className="space-y-4">
                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     Informasi Akun
                   </h4>
-
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       Nama Pemilik

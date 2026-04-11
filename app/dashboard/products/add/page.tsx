@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, ChangeEvent, FormEvent, KeyboardEvent } from "react";
+import React, {
+  useState,
+  useEffect,
+  ChangeEvent,
+  FormEvent,
+  KeyboardEvent,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Loader2, Package, Tag, Save, X } from "lucide-react";
 import toast from "react-hot-toast";
@@ -64,43 +70,45 @@ export default function AddProductPage() {
     const fetchDataInitial = async () => {
       try {
         const url = process.env.NEXT_PUBLIC_SITE_URL;
-        
+
         // Fetch Categories
         const res = await getData(`${url}api/category/get-categories`, router);
 
-        if(res.success){
-          const data = await res.data as any;
-          setCategories(data.data.data || []);
+        if (res.success) {
+          const data = (await res.data) as any;
+          setCategories(data.data || []);
         }
 
         // Fetch Detail if Edit Mode
         if (isEditMode && productId) {
           const resEdit = await getData(
-            `${url}api/product/detail-product/${productId}`
+            `${url}api/product/detail-product/${productId}`,
           );
-          if(resEdit.success){
-            const dataEdit =  resEdit.data as any;
+          if (resEdit.success) {
+            const dataEdit = resEdit.data as any;
             const p = dataEdit.data;
-  
+
             const cleanPrice = parseInt(p.price);
-  
+
             setFormData({
               name: p.name,
               price: cleanPrice,
               description: p.description || "",
               stock: p.stock || "",
-              is_available: p.is_available === 1,
+              is_available: p.is_available === "1",
               menu_category_id: p.menu_category_id,
               tags: Array.isArray(p.tags)
-                ? p.tags.map((t: string | TagDetail) => (typeof t === "object" ? t.tag_name : t))
+                ? p.tags.map((t: string | TagDetail) =>
+                    typeof t === "object" ? t.tag_name : t,
+                  )
                 : [],
             });
-  
+
             if (p.image_url) {
               setPreviewImg(
                 p.logo_url != null
                   ? p.logo_url
-                  : `${process.env.NEXT_PUBLIC_SITE_URL}storage/uploads/product/${p.image_url}`
+                  : `${process.env.NEXT_PUBLIC_SITE_URL}storage/uploads/product/${p.image_url}`,
               );
             }
           }
@@ -129,7 +137,7 @@ export default function AddProductPage() {
       payload.append("menu_category_id", String(formData.menu_category_id));
       payload.append("price", String(formData.price));
       payload.append("stock", String(formData.stock));
-      
+
       // Kirim tags sebagai string yang dipisah koma atau sesuai kebutuhan API Anda
       payload.append("tags", formData.tags.join(","));
 
@@ -146,7 +154,9 @@ export default function AddProductPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      toast.success(isEditMode ? "Produk diperbarui!" : "Produk berhasil ditambahkan!");
+      toast.success(
+        isEditMode ? "Produk diperbarui!" : "Produk berhasil ditambahkan!",
+      );
       router.push("/dashboard/products");
     } catch (error) {
       toast.error("Gagal menyimpan produk");
@@ -245,7 +255,11 @@ export default function AddProductPage() {
             </label>
             <div className="aspect-square w-full border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center overflow-hidden bg-slate-50 group relative">
               {previewImg ? (
-                <img src={previewImg} className="w-full h-full object-cover" alt="Preview" />
+                <img
+                  src={previewImg}
+                  className="w-full h-full object-cover"
+                  alt="Preview"
+                />
               ) : (
                 <div className="text-center p-4">
                   <Package className="mx-auto text-slate-300 mb-2" size={40} />
@@ -350,11 +364,22 @@ export default function AddProductPage() {
                 </label>
                 <input
                   type="number"
+                  min={0}
                   className="w-full p-2.5 border rounded-lg outline-none"
                   value={formData.stock}
-                  onChange={(e) =>
-                    setFormData({ ...formData, stock: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const rawValue = e.target.value;
+                    let numericValue = rawValue === "" ? 0 : parseInt(rawValue);
+                    if (numericValue < 0) {
+                      numericValue = 0;
+                    }
+
+                    setFormData({
+                      ...formData,
+                      stock: numericValue,
+                      is_available: numericValue > 0,
+                    });
+                  }}
                 />
               </div>
               <div className="flex items-center gap-2 pt-8">

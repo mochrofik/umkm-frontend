@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/AuthContext";
+import { Search } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -44,7 +45,7 @@ export default function HomePage() {
   const [loadingSet, setLoading] = useState<boolean>(true);
 
   // Sesuaikan interface user/role sesuai dengan AuthContext Anda
-  const { user, loading } = useAuth();
+  const { user, role, logout, loading } = useAuth();
 
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
@@ -151,26 +152,57 @@ export default function HomePage() {
     <div className="bg-gray-50 min-h-screen pb-20">
       {/* Header & Search */}
       <div className="bg-white p-4 sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
-          <span className="text-gray-400">🔍</span>
-          <input
-            type="text"
-            placeholder="Mau makan apa hari ini?"
-            className="font-poppins bg-transparent text-black ml-2 w-full outline-none text-sm"
-          />
-          {!user && !loading && (
-            <a
-              href="/login"
-              className="font-poppins bg-blue-200 font-bold text-blue-700 cursor-pointer hover:bg-blue-300 px-3 py-1 rounded-xl"
-            >
-              Login
-            </a>
-          )}
+        <div className="flex flex-row gap-2">
+          <div className="w-fit flex items-center">
+            <img className="" src={"/le_melleh.png"} width={30} height={30} ></img>
+          </div>
+          <div className="flex w-fit items-center px-2">
+            <div className="text-blue-900 w-full text-lg font-poppins font-bold font-italic">Le melle</div>
+          </div>
+          <div className="">
+            <div className= "w-full flex justify-end items-center bg-gray-100 border border-slate-200 rounded-full rounded-full px-4 py-2">
+               <Search className="text-blue-900" size={20} />
+             
+              <input
+                type="text"
+                placeholder="Mau makan apa hari ini?"
+                className="font-poppins bg-transparent text-black ml-2 w-full outline-none text-sm"
+              />
+              
+
+              
+
+              
+            </div>
+          </div>
+            {!user && !loading && (
+          <div className="flex items-center ml-auto ">
+                <a
+                  href="/login"
+                  className="font-poppins bg-blue-200 font-bold text-blue-700 cursor-pointer hover:bg-blue-300 px-3 py-1 rounded-xl"
+                >
+                  Login
+                </a>
+          </div>
+              )}
+            {role === "customer" && (
+          <div className="flex items-center ml-auto">
+                <a
+                  onClick={logout}
+                  className="font-poppins bg-red-200 font-bold text-red-700 cursor-pointer hover:bg-red-300 px-3 py-1 rounded-xl"
+                >
+                  Logout
+                </a>
+          </div>
+              )}
         </div>
+      </div>
+      <div className="relative h-[300px] flex items-center justify-center bg-gray-900 overflow-hidden">
+        <img src={"/banner.png"}  ></img>
       </div>
 
       <div className="max-w-xl mx-auto mt-10">
-        <h1 className="text-2xl font-bold text-center font-poppins text-black">
+        <h1 className="text-2xl font-bold text-center font-poppins text-gray-800">
           Pilih Kategori Yang Kamu Ingin?
         </h1>
       </div>

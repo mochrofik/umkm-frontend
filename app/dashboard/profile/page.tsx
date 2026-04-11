@@ -42,6 +42,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const { role } = useAuth();
   const [loading, setLoadingState] = useState<boolean>(true);
+  const [loadingSave, setLoadingSave] = useState<boolean>(false);
   
   const [formDataStore, setFormDataStore] = useState<StoreFormData>({
     name: "",
@@ -69,7 +70,6 @@ export default function ProfilePage() {
       setLoadingState(true);
       const url = process.env.NEXT_PUBLIC_SITE_URL;
       
-      // Menggunakan apiHelper yang sudah kita buat sebelumnya
       const response = await getData<any>(`${url}api/get-profile`, router);
 
       if (response && response.success && response.data?.data) {
@@ -119,6 +119,7 @@ export default function ProfilePage() {
   };
 
   const handleSubmit = async (e: FormEvent) => {
+    setLoadingSave(true);
     e.preventDefault();
     const token = localStorage.getItem("token");
     const payload = new FormData();
@@ -166,6 +167,8 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("err ", error);
       toast.error("Terjadi kesalahan saat memperbarui profil");
+    }finally{
+      setLoadingSave(false);
     }
   };
 
@@ -195,6 +198,7 @@ export default function ProfilePage() {
         <Loading fullPage={false} text="Memuat data profil..." />
       ) : role === "store" ? (
         <StoreForm
+        isLoadingButton={loadingSave}
           data={formDataStore}
           onChange={handleChange}
           onSubmit={handleSubmit}

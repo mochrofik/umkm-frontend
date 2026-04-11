@@ -33,7 +33,6 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const { role, logout } = useAuth();
   const pathname = usePathname();
 
-  // 3. Berikan tipe pada array menuItems
   const menuItems: MenuItem[] = [
     {
       name: "Dashboard",
@@ -66,22 +65,22 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       path: "/dashboard/product-categories",
     },
     {
-      name: "Product",
+      name: "Produk",
       role: ["store"],
       icon: <Package size={20} />,
       path: "/dashboard/products",
     },
     {
-      name: "Customer",
+      name: "Pelanggan",
       role: ["admin"],
       icon: <Users size={20} />,
       path: "/dashboard/customer",
     },
-    {
-      name: "Pengaturan",
-      icon: <Settings size={20} />,
-      path: "/dashboard/settings",
-    },
+    // {
+    //   name: "Pengaturan",
+    //   icon: <Settings size={20} />,
+    //   path: "/dashboard/settings",
+    // },
   ];
 
   // 4. Type data untuk event handler
@@ -101,13 +100,12 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     >
       <div className="flex h-20 items-center px-6 border-b border-slate-800">
         <span className="text-xl font-bold text-white tracking-wide">
-          UMKM <span className="text-blue-500">ADMIN</span>
+          Le <span className="text-blue-500">Melleh</span>
         </span>
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">
         {menuItems.map((item, index) => {
-          // Logika pengecekan role yang lebih aman di TypeScript
           const hasAccess = !item.role || (role && item.role.includes(role));
 
           if (hasAccess) {

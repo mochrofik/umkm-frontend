@@ -1,6 +1,7 @@
 import { ArrowUpRight, DollarSign, Package, ShoppingCart } from "lucide-react";
 
 export default function DashboardLayout() {
+  
 
     const stats = [
     { title: "Total Omzet", value: "Rp 2.450.000", icon: <DollarSign size={20} />, color: "bg-blue-500" },

@@ -20,6 +20,7 @@ import getCroppedImg from "@/helper/cropImage/cropImage";
 import { deleteData, getData } from "@/helper/apiHelper";
 import { useRouter } from "next/navigation";
 import ImageCropper from "@/helper/cropImage/imageCropper";
+import Pagination from "@/components/Pagination";
 
 // --- Interfaces ---
 
@@ -312,30 +313,17 @@ export default function CategoryPage() {
             )}
           </tbody>
         </table>
+        {/* Pagination */}
+        <Pagination
+        currentPage={currentPage}
+        lastPage={lastPage}
+        loading={loading}
+        setCurrentPrev={() => setCurrentpage((prev) => Math.max(prev - 1, 1))}
+        setCurrentNext={() => setCurrentpage((prev) => Math.min(prev + 1, lastPage))}
+        />
       </div>
 
-      {/* Pagination */}
-      <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-t">
-        <p className="text-sm text-slate-600">
-          Halaman <span className="font-bold">{currentPage}</span> dari <span className="font-bold">{lastPage}</span>
-        </p>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentpage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1 || loading}
-            className="p-2 border rounded-lg hover:bg-white disabled:opacity-50"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={() => setCurrentpage((prev) => Math.min(prev + 1, lastPage))}
-            disabled={currentPage === lastPage || loading}
-            className="p-2 border rounded-lg hover:bg-white disabled:opacity-50"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
-      </div>
+      
 
       {/* Modal */}
       {isModalOpen && (

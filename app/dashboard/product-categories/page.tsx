@@ -16,6 +16,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
 import { deleteData, getData } from "@/helper/apiHelper";
+import Pagination from "@/components/Pagination";
 
 // Define Interface untuk Kategori
 interface Category {
@@ -53,13 +54,20 @@ export default function CategoryPage() {
     is_active: 1,
   });
   const [processing, setProcessing] = useState<boolean>(false);
+  const [filterKategori, setFilterKategori] = useState<string>("all");
 
-  const fetchCategories = async (page: number = 1, search: string = "") => {
+  const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setFilterKategori(e.target.value);
+    setCurrentpage(1);
+    fetchCategories(1, searchTerm, e.target.value);
+  }
+
+  const fetchCategories = async (page: number = 1, search: string = "", filter:string = "") => {
     try {
       setLoading(true);
       const url = process.env.NEXT_PUBLIC_SITE_URL;
       const response = await getData(
-        `${url}api/category/get-categories?limit=10&page=${page}&search=${search}`,
+        `${url}api/category/get-categories?limit=10&page=${page}&search=${search}&status=${filter}`,
       );
 
       if(response.success){
@@ -236,23 +244,39 @@ export default function CategoryPage() {
       </div>
 
       {/* Search & Stats */}
-      <form onSubmit={handleSearch} className="mb-6">
-        <div className="relative w-full md:w-72">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder="Cari & tekan Enter..."
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
-            value={searchTerm}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setSearchTerm(e.target.value)
-            }
-          />
+      <div className="flex flex-row gap-2">
+        <div className="w-full">
+           <form onSubmit={handleSearch} className="mb-6">
+              <div className="relative w-full">
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Cari & tekan Enter..."
+                  className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
+                  value={searchTerm}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setSearchTerm(e.target.value)
+                  }
+                />
+              </div>
+            </form>
         </div>
-      </form>
+        <div className="w-full">
+          <select 
+            value={filterKategori}
+            onChange={handleFilterChange}
+            className="border w-full border-slate-200 rounded-lg outline-none  pl-2 pr-4 py-2">
+            <option value="all">Semua</option>
+            <option value="1">Aktif</option>
+            <option value="0">Nonaktif</option>
+          </select>
+        </div>
+      </div>
+
+     
 
       {/* Table Section */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -354,32 +378,15 @@ export default function CategoryPage() {
               )}
             </tbody>
           </table>
-        </div>
-      </div>
 
-      {/* --- KONTROL PAGINASI --- */}
-      <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-t">
-        <p className="text-sm text-slate-600">
-          Halaman <span className="font-bold">{currentPage}</span> dari{" "}
-          <span className="font-bold">{lastPage}</span>
-        </p>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentpage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1 || loading}
-            className="p-2 border rounded-lg hover:bg-white disabled:opacity-50 transition-colors"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={() =>
-              setCurrentpage((prev) => Math.min(prev + 1, lastPage))
-            }
-            disabled={currentPage === lastPage || loading}
-            className="p-2 border rounded-lg hover:bg-white disabled:opacity-50 transition-colors"
-          >
-            <ChevronRight size={20} />
-          </button>
+          <Pagination
+          currentPage={currentPage}
+          lastPage={lastPage}
+          loading={loading}
+          setCurrentPrev={() => setCurrentpage((prev) => Math.max(prev - 1, 1))}
+          setCurrentNext={() => setCurrentpage((prev) => Math.min(prev + 1, lastPage))}
+          
+          />
         </div>
       </div>
 

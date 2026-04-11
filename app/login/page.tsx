@@ -120,11 +120,11 @@ export default function LoginPage() {
 
     <div className="mt-8 text-center text-sm text-slate-500">
       Belum punya akun? 
-      <a href="/register" className="ml-1 text-blue-600 font-bold hover:underline underline-offset-4">
+      <a href="/register-customer" className="ml-1 text-blue-600 font-bold hover:underline underline-offset-4">
         registrasi
       </a>
       <div className="px-2"> atau </div>
-      <a href="/register-umkm" className="ml-1 text-blue-600 font-bold hover:underline underline-offset-4">
+      <a href="/register" className="ml-1 text-blue-600 font-bold hover:underline underline-offset-4">
         ingin berjualan?
       </a>
     </div>

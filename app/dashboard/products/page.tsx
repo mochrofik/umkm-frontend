@@ -17,6 +17,7 @@ import Swal, { SweetAlertResult } from "sweetalert2";
 import Link from "next/link";
 import Loading from "@/components/Loading";
 import { deleteData, getData } from "@/helper/apiHelper";
+import Pagination from "@/components/Pagination";
 
 // --- Interfaces ---
 
@@ -54,23 +55,29 @@ export default function ProductPage() {
   const [currentPage, setCurrentpage] = useState<number>(1);
   const [lastPage, setLastPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
+  const [filterKategori, setFilterKategori] = useState<string>("all");
 
-  const fetchData = async (page: number = 1, search: string = "") => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterKategori(e.target.value);
+    setCurrentpage(1);
+    fetchData(1, searchTerm, e.target.value);
+  };
+
+  const fetchData = async (page: number = 1, search: string = "", filterKategori: string ="") => {
     try {
       setLoading(true);
       const url = process.env.NEXT_PUBLIC_SITE_URL;
       const resProd = await getData(
-        `${url}api/product/get-product?page=${page}&search=${search}&limit=${perPage}`,
-        router
+        `${url}api/product/get-product?page=${page}&search=${search}&limit=${perPage}&status=${filterKategori}`,
+        router,
       );
-      if(resProd.success){
-        const dataProd: ProductResponse =  resProd.data as ProductResponse;
-        
+      if (resProd.success) {
+        const dataProd: ProductResponse = resProd.data as ProductResponse;
+
         setProducts(dataProd.data.data);
         setLastPage(dataProd.data.last_page);
         setCurrentpage(dataProd.data.current_page || 1);
         setPerPage(dataProd.data.per_page || 10);
-
       }
     } catch (error) {
       console.error(error);
@@ -107,8 +114,8 @@ export default function ProductPage() {
           });
 
           const url = process.env.NEXT_PUBLIC_SITE_URL;
-          await deleteData(`${url}api/product/destroy/${id}`,router);
-          
+          await deleteData(`${url}api/product/destroy/${id}`, router);
+
           Swal.fire({
             title: "Berhasil!",
             text: "produk telah dihapus.",
@@ -128,7 +135,7 @@ export default function ProductPage() {
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     setCurrentpage(1);
-    fetchData(1, searchTerm);
+    fetchData(1, searchTerm, filterKategori);
   };
 
   return (
@@ -136,7 +143,9 @@ export default function ProductPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 font-poppins">Menu Produk</h1>
+          <h1 className="text-2xl font-bold text-slate-800 font-poppins">
+            Menu Produk
+          </h1>
           <p className="text-slate-500 text-sm">
             Kelola daftar makanan & minuman toko Anda
           </p>
@@ -150,21 +159,37 @@ export default function ProductPage() {
       </div>
 
       {/* Search & Stats */}
-      <form onSubmit={handleSearch} className="mb-6">
-        <div className="relative w-full md">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder="Cari & tekan Enter..."
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+
+      <div className="flex flex-row gap-4">
+        <div className="w-full">
+          <form onSubmit={handleSearch} className="mb-6">
+            <div className="relative w-full md">
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                size={18}
+              />
+              <input
+                type="text"
+                placeholder="Cari & tekan Enter..."
+                className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </form>
         </div>
-      </form>
+
+        <div className="w-full">
+          <select 
+            value={filterKategori}
+            onChange={handleFilterChange}
+            className="border w-full border-slate-200 rounded-lg outline-none  pl-2 pr-4 py-2">
+            <option value="all">Semua</option>
+            <option value="1">Tersedia</option>
+            <option value="0">Habis</option>
+          </select>
+        </div>
+      </div>
 
       {/* List Table */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -193,8 +218,13 @@ export default function ProductPage() {
               products.map((item, index) => {
                 const rowNumber = (currentPage - 1) * perPage + (index + 1);
                 return (
-                  <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 text-slate-600 text-sm">{rowNumber}</td>
+                  <tr
+                    key={item.id}
+                    className="hover:bg-slate-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-slate-600 text-sm">
+                      {rowNumber}
+                    </td>
 
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -235,14 +265,18 @@ export default function ProductPage() {
                     <td className="px-6 py-4 font-bold text-blue-600">
                       Rp {Number(item.price).toLocaleString("id-ID")}
                     </td>
-                    <td className="px-6 py-4 text-sm font-medium">{item.stock || "∞"}</td>
+                    <td className="px-6 py-4 text-sm font-medium">
+                      {item.stock || "∞"}
+                    </td>
                     <td className="px-6 py-4">
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                          item.is_available ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                          item.is_available == true
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {item.is_available ? "Tersedia" : "Habis"}
+                      {item.is_available == true ? "Tersedia" : "Habis"}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -279,32 +313,16 @@ export default function ProductPage() {
             )}
           </tbody>
         </table>
-      </div>
 
-      {/* --- KONTROL PAGINASI --- */}
-      <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-t">
-        <p className="text-sm text-slate-600">
-          Halaman <span className="font-bold">{currentPage}</span> dari{" "}
-          <span className="font-bold">{lastPage}</span>
-        </p>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentpage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1 || loading}
-            className="p-2 border rounded-lg hover:bg-white disabled:opacity-50 transition-colors"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={() =>
-              setCurrentpage((prev) => Math.min(prev + 1, lastPage))
-            }
-            disabled={currentPage === lastPage || loading}
-            className="p-2 border rounded-lg hover:bg-white disabled:opacity-50 transition-colors"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          lastPage={lastPage}
+          loading={loading}
+          setCurrentPrev={() => setCurrentpage((prev) => Math.max(prev - 1, 1))}
+          setCurrentNext={() =>
+            setCurrentpage((prev) => Math.min(prev + 1, lastPage))
+          }
+        />
       </div>
     </div>
   );

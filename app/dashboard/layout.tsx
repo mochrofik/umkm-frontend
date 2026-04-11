@@ -3,25 +3,47 @@
 import React, { useEffect, useRef, useState, ReactNode, MouseEvent } from "react";
 import Sidebar from "./sidebar";
 import { useAuth } from "@/AuthContext";
-import { Loader2, LogOut } from "lucide-react"; 
+import { Loader2, LogOut, User, UserIcon } from "lucide-react"; 
 import Link from "next/link";
+import { getData } from "@/helper/apiHelper";
+import { useRouter } from "next/navigation";
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [isOpen, profileOpen] = useState<boolean>(false);
+  const [isLoading, setLoadingState] = useState<boolean>(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
   
-  // 2. Tentukan tipe untuk useRef (HTMLDivElement karena dipasang di div)
   const menuRef = useRef<HTMLDivElement>(null);
   
-  // Ambil data dari useAuth (Tipe data otomatis terdeteksi jika useAuth sudah TS)
   const { user, loading, logout } = useAuth();
 
-  // 3. Tipe data untuk event klik di luar menu
-  useEffect(() => {
+  
+    const getProfile = async () => {
+      try {
+        setLoadingState(true);
+        const url = process.env.NEXT_PUBLIC_SITE_URL;
+        const response = await getData<any>(`${url}api/get-profile`, router);
+        if (response && response.success && response.data?.data) {
+          const profile = response.data.data;
+          if(profile['get_store'] && profile['get_store']['logo_url']){
+            const iconUrl = profile['get_store']['logo_url'];
+            setAvatarUrl(iconUrl);
+            
+          }
+        }
+      } catch (error) {} finally {
+        setLoadingState(false);
+      }}
+      
+      
+      useEffect(() => {
+    getProfile();
     const handleClickOutside = (event: globalThis.MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         profileOpen(false);
@@ -30,6 +52,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+
   }, []);
 
   // 4. Tipe data untuk handler logout
@@ -38,7 +61,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     e.stopPropagation();
 
     try {
-      await logout();
+      logout();
       profileOpen(false);
       setSidebarOpen(false);
     } catch (error) {
@@ -81,7 +104,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <p className="text-xs text-slate-500">UMKM Manager</p>
               </div>
               {/* Avatar Placeholder */}
-              <div className="h-10 w-10 rounded-full bg-blue-600 border-2 border-white shadow-sm"></div>
+
+              {avatarUrl && !isLoading ? (
+                <div className="h-10 w-10 rounded-full bg-blue-600 border-2 border-white shadow-sm">
+                  <img src={avatarUrl} alt="profile" className="h-full w-full object-cover rounded-full" />
+                  </div>) : ( 
+              <UserIcon className={` text-black`} />
+                  )}
             </div>
 
             {/* Dropdown Menu */}

@@ -3,6 +3,7 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { ChevronLeft } from 'lucide-react';
 
 // Define interface untuk data form
 interface RegisterFormData {
@@ -64,7 +65,7 @@ export default function RegisterUMKM() {
       });
 
       if (response.ok) {
-        alert('Pendaftaran Berhasil!');
+        toast.success('Pendaftaran Berhasil!');
         router.push('/login');
       } else {
         const errorData = await response.json();
@@ -81,7 +82,16 @@ export default function RegisterUMKM() {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border p-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Daftar Partner UMKM</h1>
+
+           <button 
+      onClick={() => router.replace('/')}
+      className="flex items-center gap-1 text-slate-500 hover:text-blue-600 transition-colors mb-8 group"
+    >
+      <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+      <span className="text-sm font-medium">Kembali</span>
+    </button>
+          <h1 className="text-2xl font-bold text-gray-800">Daftar Partner UMKM</h1>
+
         <p className="text-gray-500 mb-8">Lengkapi data di bawah untuk mulai berjualan di Le melleh.</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -147,7 +157,7 @@ export default function RegisterUMKM() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Nomor HP / WhatsApp (Opsional)</label>
+              <label className="block text-sm font-medium text-gray-700">Nomor HP / WhatsApp</label>
               <input
                 type="text"
                 className="mt-1 w-full p-3 border border-gray-200 text-black rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
