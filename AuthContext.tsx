@@ -30,16 +30,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   
   const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
+  const getauth = async() => {
+    console.log("running");
+    setLoading(true);
     const savedRole = localStorage.getItem("role");
     const savedUser = localStorage.getItem("user");
     const savedToken = localStorage.getItem("token");
-
-
     if (savedRole && savedToken && savedUser) {
       const authPages = ["/login", "/register"];
-      
       setRole(savedRole);
       setToken(savedToken);
       
@@ -62,6 +60,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     }
     setLoading(false);
+  }
+
+  useEffect(() => {
+    console.log("authcontext running");
+    getauth();
+    const handleHistoryChange = () => {
+    console.log("User klik Back atau Forward!");
+    getauth()
+  };
+
+  window.addEventListener('popstate', handleHistoryChange);
+
+  return () => {
+    window.removeEventListener('popstate', handleHistoryChange);
+  };
   }, [pathname]); // Tambahkan pathname sebagai dependency agar re-check saat pindah halaman
 
   const login = (userData: User, userRole: string, userToken: string) => {

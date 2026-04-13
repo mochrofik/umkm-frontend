@@ -77,7 +77,7 @@ export default function LoginPage() {
     </button>
 
     <div className="mb-10 text-center">
-      <h1 className="text-3xl font-extrabold text-blue-600 tracking-tight">Le melleh!</h1>
+      <h1 className="text-3xl font-extrabold text-blue-600 tracking-tight">Le melle!</h1>
       <p className="text-slate-500 mt-2 text-sm">Dukung UMKM daerahmu dengan rasa yang juara!</p>
     </div>
                  <form onSubmit={handleLogin} className="space-y-5">

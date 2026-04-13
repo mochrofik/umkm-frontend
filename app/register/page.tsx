@@ -92,7 +92,7 @@ export default function RegisterUMKM() {
     </button>
           <h1 className="text-2xl font-bold text-gray-800">Daftar Partner UMKM</h1>
 
-        <p className="text-gray-500 mb-8">Lengkapi data di bawah untuk mulai berjualan di Le melleh.</p>
+        <p className="text-gray-500 mb-8">Lengkapi data di bawah untuk mulai berjualan di Le melle.</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Bagian 1: Akun Pemilik */}

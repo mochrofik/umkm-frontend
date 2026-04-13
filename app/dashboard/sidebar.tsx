@@ -100,7 +100,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     >
       <div className="flex h-20 items-center px-6 border-b border-slate-800">
         <span className="text-xl font-bold text-white tracking-wide">
-          Le <span className="text-blue-500">Melleh</span>
+          Le <span className="text-blue-500">melle</span>
         </span>
       </div>
 

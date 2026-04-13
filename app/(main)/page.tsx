@@ -3,6 +3,7 @@
 import { useAuth } from "@/AuthContext";
 import { Search } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -168,11 +169,6 @@ export default function HomePage() {
                 placeholder="Mau makan apa hari ini?"
                 className="font-poppins bg-transparent text-black ml-2 w-full outline-none text-sm"
               />
-              
-
-              
-
-              
             </div>
           </div>
             {!user && !loading && (
@@ -183,6 +179,20 @@ export default function HomePage() {
                 >
                   Login
                 </a>
+          </div>
+              )}
+            {role !== "customer" && (
+          <div className="flex items-center ml-auto ">
+            <Link
+            href={"/dashboard"}
+            >
+                <span
+                  className="font-poppins bg-blue-200 font-bold text-blue-700 cursor-pointer hover:bg-blue-300 px-3 py-1 rounded-xl"
+                >
+                  Dashboard
+                </span>
+
+            </Link>
           </div>
               )}
             {role === "customer" && (
