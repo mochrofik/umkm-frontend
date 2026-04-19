@@ -70,12 +70,15 @@ export default function StoreForm({ isLoadingButton, data, setFormData, onChange
       if (response && response.success) {
         const rawData: RawCategory[] = response.data.data.data;
 
-        const formattedData: CategoryOption[] = rawData.map((item) => ({
+        const formattedData: CategoryOption[] = rawData?.map((item) => ({
           value: item.id,
           label: item.name,
         }));
 
-        setCategories(formattedData);
+        if(formattedData){
+          setCategories(formattedData);
+        }
+
       }
     } catch (error) {
       console.error(error);

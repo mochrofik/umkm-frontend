@@ -1,3 +1,4 @@
+import { StoreCategories } from "./store_categories";
 
 export interface User {
   id: number;
@@ -23,6 +24,8 @@ export interface Store {
   rating: number;
   is_open: string;
   user: User;
+  jarak: number
+  store_categories: StoreCategories[  ]
 }
 
 export interface StoreFormData {

@@ -18,6 +18,7 @@ import Link from "next/link";
 import Loading from "@/components/Loading";
 import { deleteData, getData } from "@/helper/apiHelper";
 import Pagination from "@/components/Pagination";
+import Hashids from "hashids";
 
 // --- Interfaces ---
 
@@ -45,6 +46,10 @@ interface ProductResponse {
     per_page: number;
   };
 }
+
+const hashids = new Hashids("id-product", 8); // Salt bebas
+
+export const encodeId = (id: number) => hashids.encode(id);
 
 export default function ProductPage() {
   const router = useRouter();
@@ -282,7 +287,7 @@ export default function ProductPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <Link
-                          href={`/dashboard/products/add?id=${item.id}`}
+                          href={`/dashboard/products/add?id=${encodeId(item.id)}`}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
                           title="Edit Produk"
                         >

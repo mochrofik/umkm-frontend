@@ -17,6 +17,7 @@ import getCroppedImg from "@/helper/cropImage/cropImage";
 import ImageCropper from "@/helper/cropImage/imageCropper";
 import { intToRP } from "@/helper/integerToRupiah";
 import { RPtoInteger } from "@/helper/rupiahToInteger";
+import Hashids from "hashids";
 
 // --- Interfaces ---
 
@@ -38,6 +39,14 @@ interface FormDataState {
   menu_category_id: string | number;
   tags: string[];
 }
+
+const hashids = new Hashids("id-product", 8);
+
+export const decodeId = (hashedId: string): number | null => {
+  const decoded = hashids.decode(hashedId);
+  if (decoded.length === 0) return null;
+  return Number(decoded[0]);
+};
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -77,12 +86,14 @@ export default function AddProductPage() {
         if (res.success) {
           const data = (await res.data) as any;
           setCategories(data.data || []);
+        }else{
+          toast.error(res.message??"");
         }
 
         // Fetch Detail if Edit Mode
         if (isEditMode && productId) {
           const resEdit = await getData(
-            `${url}api/product/detail-product/${productId}`,
+            `${url}api/product/detail-product/${decodeId(productId) }`,
           );
           if (resEdit.success) {
             const dataEdit = resEdit.data as any;

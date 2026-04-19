@@ -75,11 +75,17 @@ export default function ProfilePage() {
       if (response && response.success && response.data?.data) {
         const profile = response.data.data;
 
+
         if (profile.role === "store") {
-          const store = profile.get_store;
-          const storeCategories = store.store_categories || [];
+          const store = profile.get_store ?? null;
+          console.log("store.store_categories",store.store_categories);
           
-          const formattedCategories: CategoryOption[] = storeCategories.map((item: any) => ({
+          if(store.store_categories == null){
+            toast.error("Lengkapi data kategori toko terlebih dahulu");
+          }
+          const storeCategories = store.store_categories ?? [];
+          
+          const formattedCategories: CategoryOption[] = storeCategories?.map((item: any) => ({
             value: item.id,
             label: item.categories.name,
           }));
@@ -101,7 +107,7 @@ export default function ProfilePage() {
             slug: store.slug || "",
             icon: store.logo_url || "",
             icon_new: store.logo_url || "",
-            categories: formattedCategories,
+            categories: formattedCategories ?? [],
           });
         }
       }
