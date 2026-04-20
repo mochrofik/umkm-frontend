@@ -3,6 +3,7 @@
 import { useAuth } from "@/AuthContext";
 import Loading from "@/components/Loading";
 import CardStoreByCategory from "@/components/main/CardStoreByCategory";
+import { getCurrentLocation, LocationData } from "@/helper/locationHelper";
 import { Store } from "@/types/stores";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,6 +16,7 @@ export default function CategoryPage() {
   const [isLoading, setLoadingState] = useState(false);
   const pathSegments = pathName.split("/").filter((item) => item !== "");
 
+  const [dataLocation, setDataLocation] = useState<LocationData>();
   const [storeData, setStoreData] = useState<Store[]>([]);
   const fetchData = async () => {
     console.log("pathName", pathName);
@@ -40,7 +42,22 @@ export default function CategoryPage() {
     }
   };
 
+  const handleLocationClick = async () => {
+    setLoadingState(true);
+
+    try {
+      const data: LocationData = await getCurrentLocation();
+
+      setDataLocation(data);
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setLoadingState(false);
+    }
+  };
+
   useEffect(() => {
+    handleLocationClick();
     fetchData();
   }, []);
   return (
@@ -86,16 +103,49 @@ export default function CategoryPage() {
       </nav>
 
       <section>
-        {isLoading ? (
+        {isLoading == true ? (
           <div>
             <Loading fullPage={false} />
           </div>
-        ) : (
+        ) : storeData && storeData.length > 0 ? (
+          /* Tampilkan Grid jika data ada */
           <div className="p-4 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-5 bg-white mt-2">
-            {storeData.map((item, index) => {
-              return <CardStoreByCategory key={item.id} data={item} />;
-            })}
-            ;
+            {storeData.map((item, index) => (
+              <CardStoreByCategory key={item.id} data={item} />
+            ))}
+          </div>
+        ) : (
+          /* Tampilkan UI Empty State jika data kosong */
+          <div className="flex flex-col items-center justify-center py-20 px-4">
+            <div className="bg-slate-50 p-6 rounded-full mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-16 w-16 text-slate-300"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="String M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-slate-800">
+              UMKM Tidak Ditemukan
+            </h3>
+            <p className="text-slate-500 text-center max-w-xs mt-2">
+              Sepertinya belum ada toko di kategori ini untuk wilayah{" "}
+              {dataLocation?.city} dan sekitarnya.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-6 text-blue-600 font-semibold hover:underline"
+            >
+              Coba Segarkan Halaman
+            </button>
           </div>
         )}
       </section>

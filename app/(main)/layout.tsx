@@ -27,17 +27,21 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <div className="bg-white p-4 sticky top-0 z-10 shadow-sm">
         <div className="flex flex-row gap-2">
           <div className="w-fit flex items-center">
-            <img
-              className=""
-              src={"/le_melleh.png"}
-              width={30}
-              height={30}
-            ></img>
+            <Link href={"/"}>
+              <img
+                className=""
+                src={"/le_melleh.png"}
+                width={30}
+                height={30}
+              ></img>
+            </Link>
           </div>
           <div className="flex w-fit items-center px-2">
-            <div className="text-blue-900 w-full text-lg font-poppins font-bold font-italic">
-              Le melle
-            </div>
+            <Link href={"/"}>
+              <div className="text-blue-900 w-full text-lg font-poppins font-bold font-italic">
+                Le melle
+              </div>
+            </Link>
           </div>
           <div className="">
             <div className="w-full flex justify-end items-center bg-gray-100 border border-slate-200 rounded-full rounded-full px-4 py-2">
