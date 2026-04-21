@@ -86,7 +86,7 @@ export default function ProfilePage() {
           const storeCategories = store.store_categories ?? [];
           
           const formattedCategories: CategoryOption[] = storeCategories?.map((item: any) => ({
-            value: item.id,
+            value: item.category_id,
             label: item.categories.name,
           }));
 

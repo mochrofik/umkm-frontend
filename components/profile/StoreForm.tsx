@@ -29,7 +29,7 @@ interface StoreData {
   latitude: number | string;
   longitude: number | string;
   categories: CategoryOption[];
-  icon_new: any; // Bisa string URL atau File object
+  icon_new: any; 
 }
 
 interface StoreFormProps {
@@ -106,8 +106,10 @@ export default function StoreForm({ isLoadingButton, data, setFormData, onChange
       const croppedImage = await getCroppedImg(imageToCrop, croppedPixels);
       setPreviewImg(URL.createObjectURL(croppedImage));
       
-      // Mutasi data prop secara langsung (mengikuti logic asli kamu)
-      data.icon_new = croppedImage; 
+      setFormData((prev: any) => ({
+        ...prev,
+        icon_new: croppedImage
+      }));
       
       setShowCropper(false);
     }
@@ -122,11 +124,11 @@ export default function StoreForm({ isLoadingButton, data, setFormData, onChange
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        setFormData({
-          ...data,
+        setFormData((prev: any) => ({
+          ...prev,
           latitude: latitude,
           longitude: longitude,
-        });
+        }));
       },
       (err) => {
         toast.error("Gagal mengambil lokasi: " + err.message);
@@ -154,19 +156,14 @@ export default function StoreForm({ isLoadingButton, data, setFormData, onChange
   // --- Effects ---
 
   useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      try {
-        await fetchCategories();
-        if (data.categories) {
-          setKategoriTerpilih(data.categories);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadData();
+    fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (data.categories) {
+      setKategoriTerpilih(data.categories);
+    }
+  }, [data.categories]);
 
   return (
     <form onSubmit={onSubmit} className="p-6 space-y-8">
@@ -278,11 +275,12 @@ export default function StoreForm({ isLoadingButton, data, setFormData, onChange
                 placeholder="Pilih kategori..."
                 value={kategoriTerpilih}
                 onChange={(value: readonly CategoryOption[]) => {
-                  setKategoriTerpilih(value);
-                  setFormData({
-                    ...data,
-                    categories: [...value],
-                  });
+                  const selectedValues = value ? [...value] : [];
+                  setKategoriTerpilih(selectedValues);
+                  setFormData((prev: any) => ({
+                    ...prev,
+                    categories: selectedValues,
+                  }));
                 }}
                 noOptionsMessage={() => "Kategori tidak ditemukan"}
               />
@@ -372,11 +370,11 @@ export default function StoreForm({ isLoadingButton, data, setFormData, onChange
               lat={Number(data.latitude)}
               lng={Number(data.longitude)}
               onChange={(lat: number, lng: number) => {
-                setFormData({
-                  ...data,
+                setFormData((prev: any) => ({
+                  ...prev,
                   latitude: lat,
                   longitude: lng,
-                });
+                }));
               }}
             />
           </div>
