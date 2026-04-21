@@ -30,6 +30,7 @@ interface StoreData {
   longitude: number | string;
   categories: CategoryOption[];
   icon_new: any; 
+  is_open: string | boolean;
 }
 
 interface StoreFormProps {
@@ -247,6 +248,31 @@ export default function StoreForm({ isLoadingButton, data, setFormData, onChange
           Profil Toko
         </h2>
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          {/* Status Buka/Tutup Toggle */}
+          <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-3 h-3 rounded-full ${data.is_open == "1" || data.is_open === "true" ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
+              <div>
+                <p className="text-sm font-bold text-slate-700">Status Toko Saat Ini</p>
+                <p className="text-xs text-slate-500">
+                  {data.is_open == "1" || data.is_open === "true" ? "Toko Anda sedang BUKA dan terlihat oleh pelanggan" : "Toko Anda sedang TUTUP dan tidak menerima pesanan"}
+                </p>
+              </div>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                className="sr-only peer"
+                checked={data.is_open == "1" || data.is_open === "true"}
+                onChange={(e) => {
+                  const newValue = e.target.checked ? "1" : "0";
+                  setFormData((prev: any) => ({ ...prev, is_open: newValue }));
+                }}
+              />
+              <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700">

@@ -28,6 +28,16 @@ export default function CardStoreByCategory({
           alt={data.name}
           className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
         />
+        {/* Status Badge */}
+        <div
+          className={`absolute top-3 right-3 px-2 py-1 rounded-lg text-[10px] font-bold shadow-sm backdrop-blur-md ${
+            data.is_open == "1" || data.is_open === "true" 
+              ? "bg-emerald-500/90 text-white"
+              : "bg-red-500/90 text-white"
+          }`}
+        >
+          {data.is_open == "1" || data.is_open === "true"  ? "BUKA" : "TUTUP"}
+        </div>
         {/* Badge Promo (Opsional) */}
         <div className="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm">
           PROMO

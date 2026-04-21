@@ -36,6 +36,7 @@ interface StoreFormData {
   icon: string;
   icon_new: any; // Bisa berupa string URL atau objek File dari cropper
   categories: CategoryOption[];
+  is_open: string | boolean;
 }
 
 export default function ProfilePage() {
@@ -63,6 +64,7 @@ export default function ProfilePage() {
     icon: "",
     icon_new: "",
     categories: [],
+    is_open: "1",
   });
 
   const getProfile = async () => {
@@ -108,6 +110,7 @@ export default function ProfilePage() {
             icon: store.logo_url || "",
             icon_new: store.logo_url || "",
             categories: formattedCategories ?? [],
+            is_open: store.is_open ?? "1",
           });
         }
       }
@@ -144,6 +147,7 @@ export default function ProfilePage() {
     payload.append("store_name", formDataStore.store_name);
     payload.append("latitude", formDataStore.latitude.toString());
     payload.append("longitude", formDataStore.longitude.toString());
+    payload.append("is_open", formDataStore.is_open.toString());
 
     // Append array kategori untuk backend Laravel
     formDataStore.categories.forEach((item) => {

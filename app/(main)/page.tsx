@@ -283,20 +283,26 @@ export default function HomePage() {
       </div>
 
       {/* List UMKM Terdekat */}
-
-      {storeNearby.length > 0 ? (
-        <div className="p-4">
-          <h2 className="font-bold text-lg text-black mb-4">
-            UMKM Terdekat untuk Kamu
-          </h2>
-          <div className="space-y-4">
-            {storeNearby.map((item, key) => (
-              <CardStore data={item} key={key} />
+      {storeNearby.length > 0 && (
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col gap-1">
+              <h2 className="font-poppins font-bold text-2xl text-gray-900">
+                UMKM Terdekat
+              </h2>
+              <p className="text-gray-500 text-sm font-poppins">
+                Temukan layanan terbaik di sekitar lokasimu
+              </p>
+            </div>
+            <div className="h-px flex-1 bg-gray-200 mx-6 hidden sm:block" />
+          </div>
+          
+          <div className="grid grid-cols-1 gap-6">
+            {storeNearby.map((item) => (
+              <CardStore data={item} key={item.id} />
             ))}
           </div>
         </div>
-      ) : (
-        ""
       )}
 
       {/* Navigation */}

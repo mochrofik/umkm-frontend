@@ -62,6 +62,11 @@ export default function StoreDetailPage() {
     }).format(value);
   };
 
+  const formatTime = (timeString: string | null) => {
+    if (!timeString) return "";
+    return timeString.substring(0, 5); // Ambil HH:mm
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -139,17 +144,24 @@ export default function StoreDetailPage() {
                 <MapPin size={16} />
                 <span className="truncate max-w-[200px] sm:max-w-none">{store.address}</span>
               </div>
-              {store.is_open ? (
-                <div className="flex items-center gap-1.5 bg-green-500/80 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-white/10">
-                  <div className="w-2 h-2 rounded-full bg-green-200 animate-pulse" />
-                  <span>Buka</span>
+              <div className="flex items-center gap-3">
+                {store.is_open == "1" || store.is_open === "true"  ? (
+                  <div className="flex items-center gap-1.5 bg-green-500/80 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-white/10">
+                    <div className="w-2 h-2 rounded-full bg-green-200 animate-pulse" />
+                    <span>Buka</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 bg-red-500/80 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-white/10">
+                    <div className="w-2 h-2 rounded-full bg-red-200" />
+                    <span>Tutup</span>
+                  </div>
+                )}
+                
+                <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-white/10">
+                  <Clock size={16} />
+                  <span>{formatTime(store.open_at)} - {formatTime(store.close_at)}</span>
                 </div>
-              ) : (
-                <div className="flex items-center gap-1.5 bg-red-500/80 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-white/10">
-                  <div className="w-2 h-2 rounded-full bg-red-200" />
-                  <span>Tutup</span>
-                </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
