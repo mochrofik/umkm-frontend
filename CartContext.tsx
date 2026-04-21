@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useCa
 import { useAuth } from "./AuthContext";
 import api from "@/utils/axios";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export interface CartItem {
   id: string | number;
@@ -22,6 +23,7 @@ interface CartContextType {
   removeFromCart: (id: string | number) => Promise<void>;
   updateQuantity: (id: string | number, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
+  checkout: (deliveryAddress: string, notes?: string) => Promise<boolean>;
   totalItems: number;
   totalPrice: number;
   loading: boolean;
@@ -34,6 +36,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [loading, setLoading] = useState(false);
   const { token, role } = useAuth();
+  const router = useRouter();
 
   const fetchCart = useCallback(async () => {
     if (!token || role !== "customer") return;
@@ -199,10 +202,60 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const checkout = async (deliveryAddress: string, notes: string = "") => {
+    if (!token || role !== "customer") {
+      toast.error("Silakan login sebagai pelanggan untuk memesan");
+      router.push("/login");
+      return false;
+    }
+
+    if (cart.length === 0) return false;
+
+    setLoading(true);
+    try {
+      const url = process.env.NEXT_PUBLIC_SITE_URL;
+      
+      // Group items by store_id
+      const storeGroups: { [key: string]: any[] } = {};
+      cart.forEach(item => {
+        if (!storeGroups[item.store_id]) {
+          storeGroups[item.store_id] = [];
+        }
+        storeGroups[item.store_id].push({
+          product_id: item.product_id || item.id,
+          quantity: item.quantity
+        });
+      });
+
+      // Send checkout request for each store
+      const checkoutPromises = Object.keys(storeGroups).map(storeId => {
+        return api.post(`${url}api/order-customer/checkout`, {
+          store_id: storeId,
+          items: storeGroups[storeId],
+          delivery_address: deliveryAddress,
+          notes: notes,
+          payment_method: 'cash' // Default for now
+        });
+      });
+
+      await Promise.all(checkoutPromises);
+      
+      toast.success("Pesanan berhasil dibuat!");
+      await clearCart();
+      router.push("/"); // Redirect to customer orders page
+      return true;
+    } catch (error: any) {
+      console.error("Checkout error:", error);
+      toast.error(error.response?.data?.message || "Gagal membuat pesanan");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const totalItems = cart.reduce((sum, item) => sum + Number(item.quantity), 0);
   const totalPrice = cart.reduce((sum, item) => sum + (Number(item.price) * Number(item.quantity)), 0);
-
 
   return (
     <CartContext.Provider
@@ -212,6 +265,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         removeFromCart,
         updateQuantity,
         clearCart,
+        checkout,
         totalItems,
         totalPrice,
         loading

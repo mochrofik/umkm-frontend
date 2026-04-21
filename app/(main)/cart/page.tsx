@@ -1,13 +1,28 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useCart } from "@/CartContext";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, CreditCard } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, totalPrice, totalItems, loading } = useCart();
+  const { cart, removeFromCart, updateQuantity, totalPrice, totalItems, loading, checkout } = useCart();
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [notes, setNotes] = useState("");
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const handleCheckout = async () => {
+    if (!deliveryAddress) {
+      toast.error("Silakan isi alamat pengiriman");
+      return;
+    }
+
+    setIsCheckingOut(true);
+    const success = await checkout(deliveryAddress, notes);
+    setIsCheckingOut(false);
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -19,7 +34,7 @@ export default function CartPage() {
 
   if (loading && cart.length === 0) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-white rounded-3xl mx-4 mt-8 shadow-sm border border-slate-100 font-poppins">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-white rounded-3xl mx-4 mt-8 shadow-sm border border-slate-100 font-poppins text-black">
         <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="text-slate-500">Memuat keranjang...</p>
       </div>
@@ -27,9 +42,8 @@ export default function CartPage() {
   }
 
   if (cart.length === 0) {
-
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-white rounded-3xl mx-4 mt-8 shadow-sm border border-slate-100 font-poppins">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-white rounded-3xl mx-4 mt-8 shadow-sm border border-slate-100 font-poppins text-black">
         <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6">
           <ShoppingBag size={48} className="text-slate-300" />
         </div>
@@ -48,7 +62,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto font-poppins pb-32">
+    <div className="p-6 max-w-4xl mx-auto font-poppins pb-32 text-black">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/" className="p-2 hover:bg-white rounded-full transition-colors">
           <ArrowLeft size={24} className="text-slate-600" />
@@ -59,92 +73,138 @@ export default function CartPage() {
         </div>
       </div>
 
-      <div className="space-y-6">
-        {/* Cart Items List */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 overflow-hidden">
-          <div className="divide-y divide-slate-100">
-            {cart.map((item) => (
-              <div key={item.id} className="py-6 first:pt-0 last:pb-0 flex gap-4 sm:gap-6">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0 relative">
-                  <Image 
-                    src={item.image_url || "/default-product.png"} 
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                </div>
-                
-                <div className="flex-1 flex flex-col justify-between">
-                  <div className="flex justify-between items-start gap-2">
-                    <div>
-                      <h3 className="font-bold text-slate-800 text-base sm:text-lg">{item.name}</h3>
-                      <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{item.store_name}</p>
-                    </div>
-                    <button 
-                      onClick={() => removeFromCart(item.id)}
-                      className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Cart Items List */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 overflow-hidden">
+            <div className="divide-y divide-slate-100">
+              {cart.map((item) => (
+                <div key={item.id} className="py-6 first:pt-0 last:pb-0 flex gap-4 sm:gap-6">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0 relative">
+                    <Image 
+                      src={item.image_url || "/default-product.png"} 
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
                   </div>
                   
-                  <div className="flex items-center justify-between mt-4">
-                    <span className="font-bold text-blue-600 text-base sm:text-lg">
-                      {formatCurrency(item.price)}
-                    </span>
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div className="flex justify-between items-start gap-2">
+                      <div>
+                        <h3 className="font-bold text-slate-800 text-base sm:text-lg">{item.name}</h3>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{item.store_name}</p>
+                      </div>
+                      <button 
+                        onClick={() => removeFromCart(item.id)}
+                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                     
-                    <div className="flex items-center gap-3 bg-slate-50 p-1 rounded-xl border border-slate-100">
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm text-slate-600 hover:text-blue-600 transition-colors"
-                      >
-                        <Minus size={14} strokeWidth={3} />
-                      </button>
-                      <span className="w-8 text-center text-sm font-bold text-slate-800">
-                        {item.quantity}
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="font-bold text-blue-600 text-base sm:text-lg">
+                        {formatCurrency(item.price)}
                       </span>
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm text-slate-600 hover:text-blue-600 transition-colors"
-                      >
-                        <Plus size={14} strokeWidth={3} />
-                      </button>
+                      
+                      <div className="flex items-center gap-3 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                        <button 
+                          onClick={() => updateQuantity(item.id, Number(item.quantity) - 1)}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm text-slate-600 hover:text-blue-600 transition-colors"
+                        >
+                          <Minus size={14} strokeWidth={3} />
+                        </button>
+                        <span className="w-8 text-center text-sm font-bold text-slate-800">
+                          {item.quantity}
+                        </span>
+                        <button 
+                          onClick={() => updateQuantity(item.id, Number(item.quantity) + 1)}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm text-slate-600 hover:text-blue-600 transition-colors"
+                        >
+                          <Plus size={14} strokeWidth={3} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Delivery Info */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+            <h3 className="font-bold text-slate-800 mb-4 text-lg">Informasi Pengiriman</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Alamat Lengkap</label>
+                <textarea 
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  placeholder="Contoh: Jl. Merdeka No. 123, Kel. Suka Maju, Kec. Senang..."
+                  className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-slate-800 text-sm min-h-[100px]"
+                />
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Order Summary */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-          <h3 className="font-bold text-slate-800 mb-6 text-lg">Ringkasan Pesanan</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between text-slate-600 text-sm">
-              <span>Subtotal</span>
-              <span className="font-semibold">{formatCurrency(totalPrice)}</span>
-            </div>
-            <div className="flex justify-between text-slate-600 text-sm">
-              <span>Biaya Layanan</span>
-              <span className="font-semibold">{formatCurrency(2000)}</span>
-            </div>
-            <div className="h-px bg-slate-100 my-2" />
-            <div className="flex justify-between items-center">
-              <span className="font-bold text-slate-800">Total Pembayaran</span>
-              <span className="text-xl font-extrabold text-blue-600">
-                {formatCurrency(totalPrice + 2000)}
-              </span>
+              <div>
+                <label className="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Catatan (Opsional)</label>
+                <input 
+                  type="text"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Contoh: Sambalnya dipisah ya..."
+                  className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-slate-800 text-sm"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Checkout Button */}
-        <button className="w-full bg-orange-500 text-white py-4 rounded-3xl font-bold text-lg shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-95 flex items-center justify-center gap-3">
-          <CreditCard size={24} />
-          Pesan Sekarang
-        </button>
+        <div className="space-y-6">
+          {/* Order Summary */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 sticky top-24">
+            <h3 className="font-bold text-slate-800 mb-6 text-lg">Ringkasan Pesanan</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between text-slate-600 text-sm">
+                <span>Subtotal ({totalItems} item)</span>
+                <span className="font-semibold">{formatCurrency(totalPrice)}</span>
+              </div>
+              <div className="flex justify-between text-slate-600 text-sm">
+                <span>Biaya Layanan</span>
+                <span className="font-semibold">{formatCurrency(2000)}</span>
+              </div>
+              <div className="h-px bg-slate-100 my-2" />
+              <div className="flex justify-between items-center mb-6">
+                <span className="font-bold text-slate-800">Total Pembayaran</span>
+                <span className="text-xl font-extrabold text-blue-600">
+                  {formatCurrency(totalPrice + 2000)}
+                </span>
+              </div>
+              
+              <button 
+                onClick={handleCheckout}
+                disabled={isCheckingOut || cart.length === 0}
+                className={`w-full py-4 rounded-2xl font-bold text-lg shadow-lg transition-all active:scale-95 flex items-center justify-center gap-3 ${
+                  isCheckingOut || cart.length === 0
+                    ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                    : "bg-orange-500 text-white shadow-orange-100 hover:bg-orange-600"
+                }`}
+              >
+                {isCheckingOut ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Memproses...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard size={24} />
+                    Pesan Sekarang
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
