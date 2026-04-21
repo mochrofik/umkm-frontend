@@ -1,10 +1,10 @@
 "use client";
 
-import { useAuth } from "@/AuthContext";
 import Loading from "@/components/Loading";
 import CardStoreByCategory from "@/components/main/CardStoreByCategory";
 import { getCurrentLocation, LocationData } from "@/helper/locationHelper";
 import { Store } from "@/types/stores";
+import { ChevronLeft, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,15 +12,21 @@ import toast from "react-hot-toast";
 
 export default function CategoryPage() {
   const pathName = usePathname();
-  const { user, role, logout, loading } = useAuth();
   const [isLoading, setLoadingState] = useState(false);
   const pathSegments = pathName.split("/").filter((item) => item !== "");
 
+  const categoryTitle = pathSegments
+    .map((s) =>
+      s
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase())
+    )
+    .join(" / ");
+
   const [dataLocation, setDataLocation] = useState<LocationData>();
   const [storeData, setStoreData] = useState<Store[]>([]);
-  const fetchData = async () => {
-    console.log("pathName", pathName);
 
+  const fetchData = async () => {
     setLoadingState(true);
     try {
       const url = process.env.NEXT_PUBLIC_SITE_URL;
@@ -30,10 +36,7 @@ export default function CategoryPage() {
 
       if (response.status == 200) {
         const data = await response.json();
-
         setStoreData(data.data);
-
-        console.log("response", data.data);
       }
     } catch (error) {
       toast.error("Terjadi kesalahan");
@@ -43,16 +46,11 @@ export default function CategoryPage() {
   };
 
   const handleLocationClick = async () => {
-    setLoadingState(true);
-
     try {
       const data: LocationData = await getCurrentLocation();
-
       setDataLocation(data);
     } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setLoadingState(false);
+      // silently ignore location errors on this page
     }
   };
 
@@ -60,95 +58,124 @@ export default function CategoryPage() {
     handleLocationClick();
     fetchData();
   }, []);
+
   return (
-    <div className="main  mx-10 my-10">
-      <nav
-        aria-label="Breadcrumb"
-        className="
-        flex items-center text-sm text-gray-600 mb-10"
-      >
-        <ol className="flex list-none p-0">
-          <li className="flex items-center">
-            <Link href="/" className="hover:text-blue-600 transition-colors">
-              Beranda
-            </Link>
-            {pathName.length > 0 && <span className="mx-2">/</span>}
-          </li>
-          {pathSegments.map((segment, index) => {
-            const href = `/${pathSegments.slice(0, index + 1).join("/")}`;
-            const isLast = index === pathSegments.length - 1;
-            const title = segment.charAt(0).toUpperCase() + segment.slice(1);
+    <div className="bg-gray-50 min-h-screen pb-24">
+      {/* Banner Section */}
+      <div className="relative h-[200px] sm:h-[280px] w-full overflow-hidden">
+        <div className="absolute inset-0 bg-gray-900">
+          <img
+            src="/banner.png"
+            alt="Category Banner"
+            className="w-full h-full object-cover opacity-50"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        </div>
 
-            return (
-              <li key={href} className="flex items-center">
-                {isLast ? (
-                  <span className=" hover:text-blue-600 transition-colors">
-                    {title}
-                  </span>
-                ) : (
-                  <>
-                    <Link
-                      href={href}
-                      className="hover:text-blue-600 transition-colors"
-                    >
-                      {title}
-                    </Link>
-                    <span className="mx-2">/</span>
-                  </>
-                )}
+        {/* Back Button */}
+        <Link
+          href="/"
+          className="absolute top-6 left-6 z-[2] bg-white/20 backdrop-blur-md p-2 rounded-full text-white hover:bg-white/40 transition-all"
+        >
+          <ChevronLeft size={24} />
+        </Link>
+
+        {/* Category Title Overlay */}
+        <div className="absolute bottom-0 left-0 w-full p-6 sm:p-10 z-[1]">
+          {/* Breadcrumb */}
+          <nav aria-label="Breadcrumb" className="mb-3">
+            <ol className="flex list-none p-0 text-sm text-white/70">
+              <li className="flex items-center">
+                <Link href="/" className="hover:text-white transition-colors">
+                  Beranda
+                </Link>
+                <span className="mx-2">/</span>
               </li>
-            );
-          })}
-        </ol>
-      </nav>
+              {pathSegments.map((segment, index) => {
+                const href = `/${pathSegments.slice(0, index + 1).join("/")}`;
+                const isLast = index === pathSegments.length - 1;
+                const title =
+                  segment
+                    .replace(/-/g, " ")
+                    .replace(/\b\w/g, (c) => c.toUpperCase());
 
-      <section>
-        {isLoading == true ? (
-          <div>
-            <Loading fullPage={false} />
-          </div>
-        ) : storeData && storeData.length > 0 ? (
-          /* Tampilkan Grid jika data ada */
-          <div className="p-4 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-5 bg-white mt-2">
-            {storeData.map((item, index) => (
-              <CardStoreByCategory key={item.id} data={item} />
-            ))}
-          </div>
-        ) : (
-          /* Tampilkan UI Empty State jika data kosong */
-          <div className="flex flex-col items-center justify-center py-20 px-4">
-            <div className="bg-slate-50 p-6 rounded-full mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-16 w-16 text-slate-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="String M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                />
-              </svg>
-            </div>
-            <h3 className="text-lg font-bold text-slate-800">
-              UMKM Tidak Ditemukan
-            </h3>
-            <p className="text-slate-500 text-center max-w-xs mt-2">
-              Sepertinya belum ada toko di kategori ini untuk wilayah{" "}
-              {dataLocation?.city} dan sekitarnya.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-6 text-blue-600 font-semibold hover:underline"
-            >
-              Coba Segarkan Halaman
-            </button>
+                return (
+                  <li key={href} className="flex items-center">
+                    {isLast ? (
+                      <span className="text-white font-semibold">{title}</span>
+                    ) : (
+                      <>
+                        <Link
+                          href={href}
+                          className="hover:text-white transition-colors"
+                        >
+                          {title}
+                        </Link>
+                        <span className="mx-2">/</span>
+                      </>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
+
+          <h1 className="text-3xl sm:text-4xl font-bold font-poppins text-white drop-shadow-md">
+            {categoryTitle}
+          </h1>
+          <p className="text-white/70 text-sm sm:text-base mt-2">
+            Temukan UMKM terbaik untuk kategori ini
+          </p>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6 relative z-[5]">
+        {/* Result count badge */}
+        {!isLoading && storeData.length > 0 && (
+          <div className="mb-6">
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-full uppercase tracking-wider shadow-sm">
+              {storeData.length} Toko Ditemukan
+            </span>
           </div>
         )}
-      </section>
+
+        <section>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loading fullPage={false} />
+            </div>
+          ) : storeData && storeData.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {storeData.map((item) => (
+                <CardStoreByCategory key={item.id} data={item} />
+              ))}
+            </div>
+          ) : (
+            /* Empty State */
+            <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-gray-300 shadow-sm">
+              <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Search className="text-slate-300" size={40} />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">
+                UMKM Tidak Ditemukan
+              </h3>
+              <p className="text-slate-500 text-center max-w-xs mx-auto mt-2">
+                Sepertinya belum ada toko di kategori ini
+                {dataLocation?.city
+                  ? ` untuk wilayah ${dataLocation.city} dan sekitarnya.`
+                  : "."}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-6 inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition-all shadow-lg"
+              >
+                Coba Segarkan Halaman
+              </button>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

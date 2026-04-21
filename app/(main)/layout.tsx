@@ -88,7 +88,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
       {children}
 
-      <div className="fixed bottom-0 w-full bg-white border-t flex justify-around py-3 text-gray-400">
+      <div className="fixed bottom-0 w-full bg-white border-t flex justify-around py-3 text-gray-400 z-20">
         <div className="text-orange-500 flex flex-col items-center">
           <span className="text-xl">🏠</span>
           <span className="text-[10px]">Beranda</span>

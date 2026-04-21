@@ -3,6 +3,8 @@ import { Store } from "@/types/stores";
 interface StoreCardProps {
     data: Store
 }
+import Link from "next/link";
+
 export default function CardStore({data}: StoreCardProps){
 
     const formatter = new Intl.NumberFormat("id-ID", {
@@ -10,10 +12,10 @@ export default function CardStore({data}: StoreCardProps){
     minimumFractionDigits: 0,
   });
     return (
-         
+         <Link href={`/store/${data.slug}`}>
             <div
               key={data.id}
-              className="bg-white rounded-xl overflow-hidden shadow-sm flex border"
+              className="bg-white rounded-xl overflow-hidden shadow-sm flex border hover:shadow-md transition-shadow cursor-pointer"
             >
               <div className="w-32 h-24 bg-gray-200">
                 <img
@@ -39,6 +41,7 @@ export default function CardStore({data}: StoreCardProps){
                 </div>
               </div>
             </div>
+          </Link>
           )
         
         

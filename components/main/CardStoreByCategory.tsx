@@ -1,22 +1,26 @@
 import { Store } from "@/types/stores";
 import { Star } from "lucide-react";
-import Image from "next/image";
 interface StoreCardByCategoryProps {
   data: Store;
 }
 
+import Link from "next/link";
+
 export default function CardStoreByCategory({
   data,
 }: StoreCardByCategoryProps) {
+
   const formatter = new Intl.NumberFormat("id-ID", {
     maximumFractionDigits: 1,
     minimumFractionDigits: 0,
   });
+
   return (
-    <div
-      className="group cursor-pointer w-full max-w-[300px] bg-white rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-100"
-      key={data.id}
-    >
+    <Link href={`/store/${data.slug}`} className="block w-full max-w-[300px]">
+      <div
+        className="group cursor-pointer w-full bg-white rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-100"
+        key={data.id}
+      >
       {/* Container Gambar */}
       <div className="relative aspect-[4/3] overflow-hidden" key={data.id}>
         <img
@@ -68,6 +72,10 @@ export default function CardStoreByCategory({
           </div>
         </div>
       </div>
-    </div>
-  );
+
+      </div>
+    </Link>
+  )
+
+  
 }

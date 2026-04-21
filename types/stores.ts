@@ -7,6 +7,26 @@ export interface User {
   status: string;
 }
 
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description: string | null;
+  image_url: string | null;
+  logo_url: string | null;
+  is_available: boolean;
+  rating?: number;
+}
+
+export interface MenuCategory {
+  id: number;
+  name: string;
+  description: string | null;
+  display_order: number;
+  is_active: boolean;
+  products: Product[];
+}
+
 export interface Store {
   id: number;
   user_id: number;
@@ -24,8 +44,9 @@ export interface Store {
   rating: number;
   is_open: string;
   user: User;
-  jarak: number
-  store_categories: StoreCategories[  ]
+  jarak: number;
+  store_categories: StoreCategories[];
+  menu_categories: MenuCategory[];
 }
 
 export interface StoreFormData {
