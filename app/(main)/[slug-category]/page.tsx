@@ -26,13 +26,15 @@ export default function CategoryPage() {
   const [dataLocation, setDataLocation] = useState<LocationData>();
   const [storeData, setStoreData] = useState<Store[]>([]);
 
-  const fetchData = async () => {
+  const fetchData = async (lat?: number, lng?: number) => {
     setLoadingState(true);
     try {
       const url = process.env.NEXT_PUBLIC_SITE_URL;
-      const response = await fetch(
-        `${url}api/get-store-by-category?category=${pathName.replaceAll("/", "")}`,
-      );
+      let endpoint = `${url}api/get-store-by-category?category=${pathName.replaceAll("/", "")}`;
+      if (lat && lng) {
+        endpoint += `&lat=${lat}&lng=${lng}`;
+      }
+      const response = await fetch(endpoint);
 
       if (response.status == 200) {
         const data = await response.json();
@@ -45,18 +47,23 @@ export default function CategoryPage() {
     }
   };
 
-  const handleLocationClick = async () => {
+  const handleLocationClick = async (): Promise<LocationData | undefined> => {
     try {
       const data: LocationData = await getCurrentLocation();
       setDataLocation(data);
+      return data;
     } catch (error: any) {
       // silently ignore location errors on this page
+      return undefined;
     }
   };
 
   useEffect(() => {
-    handleLocationClick();
-    fetchData();
+    const init = async () => {
+      const location = await handleLocationClick();
+      await fetchData(location?.latitude, location?.longitude);
+    };
+    init();
   }, []);
 
   return (
