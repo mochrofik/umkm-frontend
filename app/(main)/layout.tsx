@@ -1,52 +1,43 @@
 "use client";
 
 import { useAuth } from "@/AuthContext";
+import { useCart } from "@/CartContext";
 import { Search } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
 
 interface MainLayoutProps {
   children: ReactNode;
 }
 
-interface Category {
-  id: number;
-  name: string;
-  icon_url: string | null;
-}
-
 export default function MainLayout({ children }: MainLayoutProps) {
-  const [currentPage, setCurrentpage] = useState<number>(1);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loadingSet, setLoading] = useState<boolean>(true);
-
-  // Sesuaikan interface user/role sesuai dengan AuthContext Anda
   const { user, role, logout, loading } = useAuth();
+  const { totalItems } = useCart();
+  const pathname = usePathname();
+
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
+      {/* Top Navbar */}
       <div className="bg-white p-4 sticky top-0 z-10 shadow-sm">
         <div className="flex flex-row gap-2">
           <div className="w-fit flex items-center">
             <Link href={"/"}>
               <img
-                className=""
                 src={"/le_melleh.png"}
                 width={30}
                 height={30}
-              ></img>
+                alt="Logo"
+              />
             </Link>
           </div>
-          <div className="flex w-fit items-center px-2">
-            <Link href={"/"}>
-              <div className="text-blue-900 w-full text-lg font-poppins font-bold font-italic">
-                Le melle
-              </div>
-            </Link>
+          <div className="flex w-fit items-center px-2 text-blue-900 text-lg font-poppins font-bold italic">
+            <Link href={"/"}>Le melle</Link>
           </div>
-          <div className="">
-            <div className="w-full flex justify-end items-center bg-gray-100 border border-slate-200 rounded-full rounded-full px-4 py-2">
+          
+          <div className="flex-1 max-w-md mx-auto hidden sm:block">
+            <div className="w-full flex justify-end items-center bg-gray-100 border border-slate-200 rounded-full px-4 py-2">
               <Search className="text-blue-900" size={20} />
-
               <input
                 type="text"
                 placeholder="Mau makan apa hari ini?"
@@ -54,53 +45,70 @@ export default function MainLayout({ children }: MainLayoutProps) {
               />
             </div>
           </div>
-          {!user && !loading && (
-            <div className="flex items-center ml-auto ">
-              <a
+
+          <div className="flex items-center ml-auto gap-3">
+            {!user && !loading && (
+              <Link
                 href="/login"
-                className="font-poppins bg-blue-200 font-bold text-blue-700 cursor-pointer hover:bg-blue-300 px-3 py-1 rounded-xl"
+                className="font-poppins bg-blue-200 font-bold text-blue-700 hover:bg-blue-300 px-4 py-1.5 rounded-xl text-sm transition-colors"
               >
                 Login
-              </a>
-            </div>
-          )}
-          {user && role && role !== "customer" && (
-            <div className="flex items-center ml-auto ">
+              </Link>
+            )}
+            
+            {user && role && role !== "customer" && (
               <Link href={"/dashboard"}>
-                <span className="font-poppins bg-blue-200 font-bold text-blue-700 cursor-pointer hover:bg-blue-300 px-3 py-1 rounded-xl">
+                <span className="font-poppins bg-blue-200 font-bold text-blue-700 hover:bg-blue-300 px-4 py-1.5 rounded-xl text-sm transition-colors">
                   Dashboard
                 </span>
               </Link>
-            </div>
-          )}
-          {user && role && role === "customer" && (
-            <div className="flex items-center ml-auto">
-              <a
+            )}
+            
+            {user && role && role === "customer" && (
+              <button
                 onClick={logout}
-                className="font-poppins bg-red-200 font-bold text-red-700 cursor-pointer hover:bg-red-300 px-3 py-1 rounded-xl"
+                className="font-poppins bg-red-200 font-bold text-red-700 hover:bg-red-300 px-4 py-1.5 rounded-xl text-sm transition-colors"
               >
                 Logout
-              </a>
-            </div>
-          )}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {children}
+      {/* Main Content */}
+      <main>{children}</main>
 
+      {/* Bottom Navigation */}
       <div className="fixed bottom-0 w-full bg-white border-t flex justify-around py-3 text-gray-400 z-20">
-        <div className="text-orange-500 flex flex-col items-center">
+        <Link 
+          href="/" 
+          className={`flex flex-col items-center transition-colors ${pathname === "/" ? "text-orange-500" : "hover:text-slate-600"}`}
+        >
           <span className="text-xl">🏠</span>
-          <span className="text-[10px]">Beranda</span>
-        </div>
-        <div className="flex flex-col items-center">
+          <span className="text-[10px] font-medium mt-0.5">Beranda</span>
+        </Link>
+        
+        <Link 
+          href="/cart" 
+          className={`flex flex-col items-center relative transition-colors ${pathname === "/cart" ? "text-orange-500" : "hover:text-slate-600"}`}
+        >
           <span className="text-xl">📋</span>
-          <span className="text-[10px]">Pesanan</span>
-        </div>
-        <div className="flex flex-col items-center">
+          {totalItems > 0 && (
+            <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm animate-in zoom-in duration-300">
+              {totalItems}
+            </span>
+          )}
+          <span className="text-[10px] font-medium mt-0.5">Pesanan</span>
+        </Link>
+        
+        <Link 
+          href="/dashboard/profile" 
+          className={`flex flex-col items-center transition-colors ${pathname === "/dashboard/profile" ? "text-orange-500" : "hover:text-slate-600"}`}
+        >
           <span className="text-xl">👤</span>
-          <span className="text-[10px]">Profil</span>
-        </div>
+          <span className="text-[10px] font-medium mt-0.5">Profil</span>
+        </Link>
       </div>
     </div>
   );

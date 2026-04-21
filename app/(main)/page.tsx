@@ -206,7 +206,7 @@ export default function HomePage() {
       </div>
 
       {/* Lokasi */}
-      <div className="mx-auto max-w-xl text-center">Cari UMKM Terdekat</div>
+      <div className="mx-auto max-w-xl text-center text-poppins text-black">Cari UMKM Terdekat</div>
       <div className="mt-10 max-w-xl mx-auto bg-white rounded-[2rem] shadow-sm border p-8">
         <label className="font-poppins block text-gray-700 text-sm font-medium mb-2 ml-1">
           Lokasi saya saat ini
@@ -305,21 +305,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Navigation */}
-      <div className="fixed bottom-0 w-full bg-white border-t flex justify-around py-3 text-gray-400">
-        <div className="text-orange-500 flex flex-col items-center">
-          <span className="text-xl">🏠</span>
-          <span className="text-[10px]">Beranda</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <span className="text-xl">📋</span>
-          <span className="text-[10px]">Pesanan</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <span className="text-xl">👤</span>
-          <span className="text-[10px]">Profil</span>
-        </div>
-      </div>
     </div>
   );
 }

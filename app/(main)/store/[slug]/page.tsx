@@ -6,8 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, MapPin, Phone, Clock, ChevronLeft, Search } from "lucide-react";
 import toast from "react-hot-toast";
-import { Store } from "@/types/stores";
+import { Store, Product } from "@/types/stores";
 import Loading from "@/components/Loading";
+import { useCart } from "@/CartContext";
 
 interface StoreDetailResponse {
   success: boolean;
@@ -20,6 +21,7 @@ export default function StoreDetailPage() {
   const slug = params.slug as string;
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
 
   const fetchStoreDetail = async () => {
     try {
@@ -65,6 +67,29 @@ export default function StoreDetailPage() {
   const formatTime = (timeString: string | null) => {
     if (!timeString) return "";
     return timeString.substring(0, 5); // Ambil HH:mm
+  };
+
+  const handleAddToCart = (product: Product) => {
+    if (!store) return;
+    
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image_url: product.logo_url,
+      store_id: store.id,
+      store_name: store.name
+    });
+    
+    toast.success(`${product.name} ditambahkan ke keranjang`, {
+      icon: '🛒',
+      style: {
+        borderRadius: '12px',
+        background: '#333',
+        color: '#fff',
+      },
+    });
   };
 
   if (loading) {
@@ -220,7 +245,10 @@ export default function StoreDetailPage() {
                             <span className="text-blue-700 font-extrabold text-xl font-poppins">
                               {formatCurrency(product.price)}
                             </span>
-                            <button className="bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-md active:scale-95">
+                            <button 
+                              onClick={() => handleAddToCart(product)}
+                              className="bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-md active:scale-95"
+                            >
                               <span className="text-2xl font-bold">+</span>
                             </button>
                           </div>
