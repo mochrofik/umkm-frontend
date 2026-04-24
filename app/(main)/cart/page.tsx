@@ -62,7 +62,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto font-poppins pb-32 text-black">
+    <div className="p-6 max-w-7xl mx-auto font-poppins pb-32 text-black">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/" className="p-2 hover:bg-white rounded-full transition-colors">
           <ArrowLeft size={24} className="text-slate-600" />
