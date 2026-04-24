@@ -92,6 +92,7 @@ export default function HomePage() {
         });
         const data: OSMResponse = await response.json();
         setCurrentLocation(data.display_name);
+        localStorage.setItem("user_location", data.display_name);
       } catch (error) {
         console.error(error);
       }
@@ -103,6 +104,8 @@ export default function HomePage() {
 
         setLatitude(latitude);
         setLongitude(longitude);
+        localStorage.setItem("user_lat", latitude.toString());
+        localStorage.setItem("user_lng", longitude.toString());
         getLocationNameOSM(latitude, longitude);
       },
       (err: GeolocationPositionError) => {
@@ -147,6 +150,21 @@ export default function HomePage() {
     fetchCategories(currentPage);
   }, [currentPage]);
 
+  useEffect(() => {
+    const savedLat = localStorage.getItem("user_lat");
+    const savedLng = localStorage.getItem("user_lng");
+    const savedLoc = localStorage.getItem("user_location");
+
+    if (savedLat && savedLng && savedLoc) {
+      const lat = parseFloat(savedLat);
+      const lng = parseFloat(savedLng);
+      setLatitude(lat);
+      setLongitude(lng);
+      setCurrentLocation(savedLoc);
+      searchNearby(lat, lng);
+    }
+  }, []);
+
   const formatter = new Intl.NumberFormat("id-ID", {
     maximumFractionDigits: 1,
     minimumFractionDigits: 0,
@@ -154,8 +172,8 @@ export default function HomePage() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="relative h-[300px] flex items-center justify-center bg-gray-900 overflow-hidden">
-        <img src={"/banner.png"}></img>
+      <div className="relative h-[230px] sm:h-[300px] flex items-center justify-center bg-gray-900 overflow-hidden">
+        <img src={"/banner.png"} className="w-full h-full object-cover" alt="Banner" />
       </div>
 
       <div className="max-w-xl mx-auto mt-10">
