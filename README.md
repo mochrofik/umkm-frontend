@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UMKM Web Marketplace
 
-## Getting Started
+A modern, high-performance web marketplace platform designed for UMKM (Micro, Small, and Medium Enterprises). This application enables store owners to manage their businesses effectively while providing customers with a seamless shopping experience.
 
-First, run the development server:
+## 🚀 Tech Stack
 
+Built with the latest and most powerful web technologies:
+
+- **Framework:** [Next.js 15+](https://nextjs.org/) (App Router & React 19)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
+- **Authentication:** [NextAuth.js](https://next-auth.js.org/)
+- **Maps & Geolocation:** [Leaflet](https://leafletjs.com/) & [React-Leaflet](https://react-leaflet.js.org/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Notifications:** [SweetAlert2](https://sweetalert2.github.io/) & [React Hot Toast](https://react-hot-toast.com/)
+- **HTTP Client:** [Axios](https://axios-http.com/)
+- **Forms & Selection:** [React Select](https://react-select.com/)
+- **State Management:** React Context API (Custom Auth & Cart Providers)
+
+## ✨ Features
+
+### 🛒 Customer Experience
+- **Browse & Search:** Discover UMKM stores and products through category filtering and search.
+- **Smart Cart:** Persistent shopping cart system to manage items before checkout.
+- **Order Tracking:** Monitor the status of your orders from pending to completed.
+- **Geolocation:** Find stores near you using interactive map integration.
+- **Responsive Design:** Optimized for both mobile and desktop users.
+
+### 🏪 Store Owner Dashboard
+- **Product Management:** Full CRUD operations for products, including image cropping (`react-easy-crop`).
+- **Inventory Control:** Manage product categories and stock effectively.
+- **Order Processing:** Real-time dashboard to track and update customer orders.
+- **Store Profile:** Customize your store's identity and operational status.
+- **Notifications:** Stay updated with instant alerts for new orders and activities.
+
+## 🛠️ Installation
+
+Follow these steps to set up the project locally:
+
+### 1. Clone the Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-username/umkm-web.git
+cd umkm-web
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Environment Configuration
+Create a `.env.local` file in the root directory and add the following variables (adjust the values to your setup):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# Server-side API URL
+API_SECRET_URL=your_api_secret_url
 
-## Learn More
+# Public API URL for client-side
+NEXT_PUBLIC_SITE_URL=https://api.your-domain.com/
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Run Development Server
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🏗️ Project Structure
 
-## Deploy on Vercel
+- `/app`: Next.js App Router (Routes, Layouts, and Pages)
+- `/components`: Reusable UI components
+- `/context`: Global state management (Auth, Cart)
+- `/helper`: Utility functions and formatting helpers
+- `/types`: TypeScript interface definitions
+- `/public`: Static assets (images, icons)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Developed with ❤️ to empower local businesses.
