@@ -45,7 +45,7 @@ interface FormDataState {
 }
 
 export default function CategoryPage() {
-    const router = useRouter()
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -55,7 +55,10 @@ export default function CategoryPage() {
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [formData, setFormData] = useState<FormDataState>({ name: "", id: null });
+  const [formData, setFormData] = useState<FormDataState>({
+    name: "",
+    id: null,
+  });
   const [processing, setProcessing] = useState<boolean>(false);
 
   const [selectedImg, setSelectedImage] = useState<File | null>(null);
@@ -67,19 +70,18 @@ export default function CategoryPage() {
   const fetchCategories = async (page: number = 1, search: string = "") => {
     try {
       setLoading(true);
-      const response = await getData(
-        `category/get?page=${page}&search=${search}`,
-        router
+      const response = await getData<any>(
+        `category/get?page=${page}&search=${search}&limit=${perPage}`,
+        router,
       );
 
-      if(response.success){
-        const data: CategoryResponse =  response.data as CategoryResponse;
+      if (response.success) {
+        const data = (await response.data) as CategoryResponse;
         setCategories(data.data.data);
         setCurrentpage(data.data.current_page || 1);
         setLastpage(data.data.last_page || 1);
         setPerPage(data.data.per_page || 10);
       }
-
     } catch (error) {
       toast.error("Terjadi kesalahan saat mengambil data kategori");
     } finally {
@@ -162,7 +164,7 @@ export default function CategoryPage() {
             didOpen: () => Swal.showLoading(),
           });
 
-          await deleteData(`category/destroy/${id}`, router  );
+          await deleteData(`category/destroy/${id}`, router);
 
           Swal.fire({
             title: "Berhasil!",
@@ -227,13 +229,18 @@ export default function CategoryPage() {
       {/* Search */}
       <form onSubmit={handleSearch} className="mb-6">
         <div className="relative w-full md:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            size={18}
+          />
           <input
             type="text"
             placeholder="Cari & tekan Enter..."
             className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
             value={searchTerm}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setSearchTerm(e.target.value)
+            }
           />
         </div>
       </form>
@@ -254,7 +261,8 @@ export default function CategoryPage() {
               </th>
               <th className="px-6 py-4 text-sm font-semibold text-slate-600 text-right">
                 Aksi
-              </th></tr>
+              </th>
+            </tr>
           </thead>
           <tbody>
             {loading ? (
@@ -263,14 +271,19 @@ export default function CategoryPage() {
                   <Loading fullPage={false} text="Memuat data kategori..." />
                 </td>
               </tr>
-            ) : categories.length > 0 ? (
+            ) : categories?.length > 0 ? (
               categories.map((cat, index) => {
                 const rowNumber = (currentPage - 1) * perPage + (index + 1);
                 return (
-                  <tr key={cat.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <tr
+                    key={cat.id}
+                    className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                  >
                     <td className="px-6 py-4 text-slate-600">{rowNumber}</td>
-                    <td className="px-6 py-4 font-medium text-slate-800 ">{cat.name}</td>
-                      <td className=" py-4">
+                    <td className="px-6 py-4 font-medium text-slate-800 ">
+                      {cat.name}
+                    </td>
+                    <td className=" py-4">
                       {cat.icon_url ? (
                         <Image
                           src={cat.icon_url}
@@ -286,8 +299,18 @@ export default function CategoryPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => openModal(cat)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"><Pencil size={18} /></button>
-                        <button onClick={() => handleDelete(cat.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={18} /></button>
+                        <button
+                          onClick={() => openModal(cat)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                        >
+                          <Pencil size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(cat.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                        >
+                          <Trash2 size={18} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -295,22 +318,27 @@ export default function CategoryPage() {
               })
             ) : (
               <tr>
-                <td colSpan={4} className="px-6 py-10 text-center text-slate-400">Data tidak ditemukan.</td>
+                <td
+                  colSpan={4}
+                  className="px-6 py-10 text-center text-slate-400"
+                >
+                  Data tidak ditemukan.
+                </td>
               </tr>
             )}
           </tbody>
         </table>
         {/* Pagination */}
         <Pagination
-        currentPage={currentPage}
-        lastPage={lastPage}
-        loading={loading}
-        setCurrentPrev={() => setCurrentpage((prev) => Math.max(prev - 1, 1))}
-        setCurrentNext={() => setCurrentpage((prev) => Math.min(prev + 1, lastPage))}
+          currentPage={currentPage}
+          lastPage={lastPage}
+          loading={loading}
+          setCurrentPrev={() => setCurrentpage((prev) => Math.max(prev - 1, 1))}
+          setCurrentNext={() =>
+            setCurrentpage((prev) => Math.min(prev + 1, lastPage))
+          }
         />
       </div>
-
-      
 
       {/* Modal */}
       {isModalOpen && (
@@ -320,43 +348,66 @@ export default function CategoryPage() {
               <h3 className="text-lg font-bold text-slate-800">
                 {editingCategory ? "Edit Kategori" : "Tambah Kategori Baru"}
               </h3>
-              <button onClick={closeModal} className="text-slate-400 hover:text-slate-600"><X size={20} /></button>
+              <button
+                onClick={closeModal}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X size={20} />
+              </button>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Nama Kategori</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Nama Kategori
+                  </label>
                   <input
                     type="text"
                     required
                     className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
                     placeholder="Contoh: Makanan, Minuman"
                     value={formData.name}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Icon Kategori</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Icon Kategori
+                  </label>
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 border-2 border-dashed border-slate-200 rounded-lg flex items-center justify-center overflow-hidden bg-slate-50">
                       {previewImg ? (
-                        <img src={previewImg} alt="Preview" className="w-full h-full object-cover" />
+                        <img
+                          src={previewImg}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
-                        <span className="text-slate-400 text-xs text-center">No Icon</span>
+                        <span className="text-slate-400 text-xs text-center">
+                          No Icon
+                        </span>
                       )}
                     </div>
-                    
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  />
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
                   </div>
                 </div>
               </div>
               <div className="px-6 py-4 bg-slate-50 flex justify-end gap-3">
-                <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 font-bold">Batal</button>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 text-slate-600 font-bold"
+                >
+                  Batal
+                </button>
                 <button
                   type="submit"
                   disabled={processing}
