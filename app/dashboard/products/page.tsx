@@ -68,7 +68,11 @@ export default function ProductPage() {
     fetchData(1, searchTerm, e.target.value);
   };
 
-  const fetchData = async (page: number = 1, search: string = "", filterKategori: string ="") => {
+  const fetchData = async (
+    page: number = 1,
+    search: string = "",
+    filterKategori: string = "",
+  ) => {
     try {
       setLoading(true);
       const resProd = await getData(
@@ -183,10 +187,11 @@ export default function ProductPage() {
         </div>
 
         <div className="w-full">
-          <select 
+          <select
             value={filterKategori}
             onChange={handleFilterChange}
-            className="border w-full border-slate-200 rounded-lg outline-none  pl-2 pr-4 py-2">
+            className="border w-full border-slate-200 rounded-lg outline-none  pl-2 pr-4 py-2"
+          >
             <option value="all">Semua</option>
             <option value="1">Tersedia</option>
             <option value="0">Habis</option>
@@ -279,13 +284,13 @@ export default function ProductPage() {
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                      {item.is_available == true ? "Tersedia" : "Habis"}
+                        {item.is_available == true ? "Tersedia" : "Habis"}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <Link
-                          href={`/dashboard/products/add?id=${encodeId(item.id)}`}
+                          href={`/dashboard/products/add?id=${item.id}`}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
                           title="Edit Produk"
                         >
