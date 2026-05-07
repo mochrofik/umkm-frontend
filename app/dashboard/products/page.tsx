@@ -290,7 +290,7 @@ export default function ProductPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <Link
-                          href={`/dashboard/products/add?id=${item.id}`}
+                          href={`/dashboard/products/add?id=${encodeId(item.id)}`}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
                           title="Edit Produk"
                         >

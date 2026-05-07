@@ -84,8 +84,8 @@ export default function AddProductPage() {
         if (res.success) {
           const data = (await res.data) as any;
           setCategories(data.data || []);
-        }else{
-          toast.error(res.message??"");
+        } else {
+          toast.error(res.message ?? "");
         }
 
         // Fetch Detail if Edit Mode
@@ -150,7 +150,7 @@ export default function AddProductPage() {
       payload.append("tags", formData.tags.join(","));
 
       if (isEditMode && productId) {
-        payload.append("id", productId);
+        payload.append("id", `${decodeId(productId)}`);
       }
 
       if (selectedImg) {
