@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { postData } from "@/helper/apiHelper";
+import { registerFromGoogleService } from "@/service/auth.service";
+import InputUI from "../ui/input/Input";
+import ButtonUI from "../ui/button/Button";
 
 interface CreatePasswordFormProps {
   google_user: GoogleUser;
@@ -33,7 +36,7 @@ export default function CreatePasswordForm({
     setLoading(true);
 
     try {
-      const response = await postData("register-from-google", formData, router);
+      const response = await registerFromGoogleService(formData);
 
       if (response.success) {
         toast.success(response.message || "Pendaftaran berhasil");
@@ -64,107 +67,74 @@ export default function CreatePasswordForm({
               Data Pribadi
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Nama Lengkap
-                </label>
-                <input
-                  required
-                  type="text"
-                  minLength={3}
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="mt-1 w-full p-3 border border-gray-200 text-black rounded-xl  outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Email
-                </label>
-                <input
-                  required
-                  type="email"
-                  readOnly
-                  value={formData.email}
-                  className="mt-1 w-full p-3 border border-gray-200 text-black rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <InputUI
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                label="Nama Lengkap"
+                required
+                minLength={3}
+                placeholder="Nama Lengkap"
+                type="text"
+              />
+
+              <InputUI
+                value={formData.email}
+                label="Email"
+                required
+                placeholder="Email"
+                type="email"
+                readOnly={true}
+                disabled={true}
+                onChange={(e) => {}}
+              />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Nomor HP / WhatsApp
-              </label>
-              <input
-                type="text"
-                required
-                minLength={10}
-                value={formData.phone_number}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone_number: e.target.value })
-                }
-                className="mt-1 w-full p-3 border border-gray-200 text-black rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Password (Min. 8 Karakter)
-              </label>
-              <input
-                required
-                minLength={8}
-                type="password"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                className="mt-1 w-full p-3 border border-gray-200 text-black rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Konfirmasi Password
-              </label>
-              <input
-                required
-                minLength={8}
-                type="password"
-                value={formData.password_confirmation}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    password_confirmation: e.target.value,
-                  })
-                }
-                className={`mt-1 w-full p-3 border rounded-xl outline-none focus:ring-2 transition-all ${
-                  formData.password_confirmation &&
-                  formData.password !== formData.password_confirmation
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-200 focus:ring-blue-500"
-                } text-black`}
-              />
-              {formData.password_confirmation &&
-                formData.password !== formData.password_confirmation && (
-                  <p className="text-red-500 text-xs mt-1 animate-pulse">
-                    * Password tidak cocok
-                  </p>
-                )}
-            </div>
+            <InputUI
+              value={formData.phone_number}
+              onChange={(e) =>
+                setFormData({ ...formData, phone_number: e.target.value })
+              }
+              label="Nomor HP / WhatsApp"
+              required
+              minLength={10}
+              placeholder="Nomor HP / WhatsApp"
+              type="text"
+            />
+
+            <InputUI
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              label="Password (Min. 8 Karakter)"
+              required
+              minLength={8}
+              placeholder="Password"
+              type="password"
+            />
+
+            <InputUI
+              value={formData.password_confirmation}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  password_confirmation: e.target.value,
+                })
+              }
+              label="Konfirmasi Password"
+              required
+              minLength={8}
+              placeholder="Konfirmasi Password"
+              type="password"
+              confirmationPassword={formData.password}
+            />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={` cursor-pointer w-full py-4 rounded-xl font-bold text-lg text-white transition shadow-lg ${
-              loading
-                ? "bg-gray-400"
-                : "bg-blue-600 hover:bg-blue-700 active:scale-95"
-            }`}
-          >
+          <ButtonUI type="submit" loading={loading}>
             {loading ? "Sedang Mendaftar..." : "Daftar Sekarang"}
-          </button>
+          </ButtonUI>
         </form>
       </div>
     </div>

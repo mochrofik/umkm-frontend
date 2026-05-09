@@ -34,7 +34,7 @@ export default function RegisterUMKM() {
     setLoading(true);
 
     try {
-      const response = await postData(`register`, formData, router);
+      const response = await postData(`register`, formData);
       if (response.success) {
         toast.success("Pendaftaran Berhasil!");
         router.push("/login");
@@ -71,7 +71,7 @@ export default function RegisterUMKM() {
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border p-8">
         <button
-          onClick={() => router.replace("/")}
+          onClick={() => router.back()}
           className="flex items-center gap-1 text-slate-500 hover:text-blue-600 transition-colors mb-8 group"
         >
           <ChevronLeft

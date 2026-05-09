@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { environment } from "./constans/environment";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -11,7 +12,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:8000/'}api/:path*`,
+        destination: `${environment.API_URL || 'http://localhost:8000/'}api/:path*`,
       },
     ];
   },

@@ -63,8 +63,8 @@ export const getData = <T>(url: string, router?: AppRouterInstance, params: obje
   return requestHandler<T>(api.get(url, { params }), router);
 };
 
-export const postData = <T>(url: string, data: object, router: AppRouterInstance) => {
-  return requestHandler<T>(api.post(url, data), router);
+export const postData = <T>(url: string, data: object) => {
+  return requestHandler<T>(api.post(url, data));
 };
 
 export const updateData = <T>(url: string, data: object, router: AppRouterInstance) => {

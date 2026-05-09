@@ -6,7 +6,7 @@ import CreatePasswordForm from "@/components/create-password/CreatePasswordForm"
 import { GoogleUser } from "@/types/google_user";
 import toast from "react-hot-toast";
 import { useAuth } from "@/AuthContext";
-import { postData } from "@/helper/apiHelper";
+import { googleCallbackService } from "@/service/auth.service";
 
 export default function GoogleCallback() {
   const router = useRouter();
@@ -19,11 +19,10 @@ export default function GoogleCallback() {
     const handleCallback = async () => {
       const code = searchParams.get("code");
       const role = localStorage.getItem("pending_role");
-      const url = `auth/google/callback`;
 
       if (code) {
         try {
-          const response = await postData<any>(url, { code, role }, router);
+          const response = await googleCallbackService(code, role);
 
           if (response.success && response.data) {
             const resData = response.data; // Body dari Laravel
